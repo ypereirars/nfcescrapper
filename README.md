@@ -28,7 +28,7 @@ This will generate a JSON file as such:
     "how_paid": "Dinheiro",
     "total_paied": 258.54,
     "exchange": 0.0,
-    "taxes": 59.92,
+    "tax": 59.92,
     "items": [
         {
             "product": "PRODUTO 1",

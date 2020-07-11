@@ -115,7 +115,7 @@ class NfeProcessor():
             "how_paid": self.__sanitize_text(how_paid),
             "total_paied": self.__sanitize_number(totals[5].text),
             "exchange": self.__sanitize_number(totals[6].text),
-            "taxes": self.__sanitize_number(totals[7].text)
+            "tax": self.__sanitize_number(totals[7].text)
         }
 
     def __get_items(self, content):
