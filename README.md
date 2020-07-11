@@ -6,13 +6,17 @@ Python webscrapper for downloading information from a NFe and transform it to JS
 In order to test this script, run the following command:
 
 ```console
-> python nfescrapper/main.py --url ~/examples/data.html --out ~/examples/data.json
+> python nfescrapper/main.py\
+--url ~/examples/data.html\
+--out ~/examples/data.json
 ```
 
 To scrap data from a real URL, let's assume the URL is http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=123, then run the following:
 
 ```console
-> python nfescrapper/main.py --url "http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=123" --out ~/examples/data.json
+> python nfescrapper/main.py\
+--url "http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=123"\
+--out ~/examples/data.json
 ```
 
 This will generate a JSON file as such:
