@@ -119,7 +119,7 @@ class NfeProcessor():
         }
 
     def __get_items(self, content):
-         """Get items from eletronic invoice
+        """Get items from eletronic invoice
 
         Args:
             content (BeautifullSoup): an html div where table content is located
