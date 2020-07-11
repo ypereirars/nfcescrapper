@@ -1,0 +1,47 @@
+{
+    "company_name": "ESTABELECIMENTO",
+    "cnpj": "12.345.678/0000-00",
+    "address": "RUA UM , 000008 , E 000 LJ A , BAIRRO , CIDADE , ES",
+    "total_items": 37.0,
+    "total_value": 262.52,
+    "discounts": 3.98,
+    "total_to_pay": 258.54,
+    "how_paid": "Dinheiro",
+    "total_paied": 258.54,
+    "exchange": 0.0,
+    "taxes": 59.92,
+    "items": [
+        {
+            "product": "PRODUTO 1",
+            "code": "00000001",
+            "quantity": 1.0,
+            "uom": "UN: UN",
+            "unitary_price": 16.99,
+            "total": 16.99
+        },
+        {
+            "product": "PRODUTO 2",
+            "code": "00000002",
+            "quantity": 1.0,
+            "uom": "UN: UN",
+            "unitary_price": 2.49,
+            "total": 2.49
+        },
+        {
+            "product": "PRODUTO 3",
+            "code": "00000003",
+            "quantity": 1.0,
+            "uom": "UN: UN",
+            "unitary_price": 2.39,
+            "total": 2.39
+        },
+        {
+            "product": "PRODUTO 4",
+            "code": "00000004",
+            "quantity": 3.0,
+            "uom": "UN: UN",
+            "unitary_price": 1.69,
+            "total": 5.07
+        }
+    ]
+}
