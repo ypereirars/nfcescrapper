@@ -1,4 +1,4 @@
-# NF-e - Nota Fiscal Eletrônica
+# NFC-e - Nota Fiscal de Consumidor Eletrônica
 
 Python webscrapper for downloading information from a NFe and transform it to JSON.
 
