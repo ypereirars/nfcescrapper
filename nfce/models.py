@@ -72,5 +72,5 @@ class EletronicInvoice(object):
         header = [*self.company.__dict__.keys(), *self.totals.__dict__.keys(),
                   'code', 'name', 'quantity', 'unity_of_measure', 'price', 'currency', 'total_price']
         for item in self.items:
-            yield (header, [*company, *totals, item.code, item.name, item.quantity, 
+            yield (header, [*company, *totals, item.code, item.name, item.quantity,
                             item.unity_of_measure, item.price, item.currency, item.total_price])

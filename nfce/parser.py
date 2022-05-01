@@ -47,12 +47,11 @@ class NFCeParser():
         self.content_selector = content_selector
         self.page = None
         self.content = None
-        
-    
+
     def parse(self, page) -> EletronicInvoice:
         self.page = page
         self.content = self.page.find("div", id=self.content_selector)
-        
+
         company = self._get_company()
         totals = self._get_totals()
         items = self._get_items()
@@ -60,7 +59,7 @@ class NFCeParser():
         invoice = EletronicInvoice(company, items, totals)
 
         return invoice
-    
+
     def _get_company(self) -> Company:
         """ Get company data from an invoice content
 

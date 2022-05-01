@@ -16,15 +16,15 @@ class NfeScrapper():
 
     def __init__(self,
         content_parser: NFCeParser,
-        chromedriver_path="chromedriver", 
-        id_to_wait="tabResult", 
+        chromedriver_path="chromedriver",
+        id_to_wait="tabResult",
         wait_timeout=5):
-        """Configures an invoice processor. 
+        """Configures an invoice processor.
 
         Args:
             chromedriver_path (str, optional): chrome webdriver path location.
             Defaults to "chromedriver" assuming it's present in path variable.
-            id_to_wait (str, optional): HTML id that the scrapper must wait on 
+            id_to_wait (str, optional): HTML id that the scrapper must wait on
             to start loading page. Defaults to "tabResult".
             wait_timeout (int, optional): how long to wait until it times out.
             Defaults to 5.
@@ -40,12 +40,12 @@ class NfeScrapper():
 
         try:
             page = self._get_page_data(browser)
-            nfe_data = self.content_parser.parse(page)     
+            nfe_data = self.content_parser.parse(page)
         except TimeoutException:
             print("Timed out waiting for page to load")
         finally:
             browser.close()
-        
+
         return nfe_data
 
     def _get_browser(self) -> Chrome:
@@ -63,10 +63,10 @@ class NfeScrapper():
 
     def _get_page_data(self, browser: Chrome) -> BeautifulSoup:
         """ Get data from an invoice page
-        
+
         Args:
             browser (Chrome): web browser
-        
+
         Returns:
             BeautifulSoup: html page
         """
@@ -74,5 +74,5 @@ class NfeScrapper():
         WebDriverWait(browser, self.timeout).until(element_present)
         source = browser.page_source
         data = BeautifulSoup(source, 'html.parser')
-        
+
         return data
