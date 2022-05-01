@@ -1,55 +1,43 @@
-from processor.NfeProcessor import NfeProcessor
-from utils.strcleaner import StrCleaner
-import argparse, json, os, csv
+from nfce import NFCeParser, NfeScrapper
+import argparse, json, csv
 
-parser = argparse.ArgumentParser(description='Download data from a NFe.')
 
-parser.add_argument('--url',  metavar='url', type=str, required=True, 
-                    help='URL to download NFe.')
+def main(args):
+    parser = NFCeParser()
+    processor = NfeScrapper(parser, args.webdriver_path)
+    data = processor.get(args.url)
 
-parser.add_argument('--format',  metavar='o', type=str, default="json",
-                    help='Whether to export as csv or json. Defaults to json')
+    output_path = f'{args.out}.{args.format}'
+    with open(output_path, 'w', encoding='utf-8') as outfile:
+        if args.format == "json":
+            data = data.serialize()
+            json.dump(data, outfile, ensure_ascii=False, indent=4)
+        elif args.format == "csv":
+            writer = csv.writer(outfile, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
+            rows = data.to_csv()
+            write_header = True
+            for header, row in rows:
+                if write_header:
+                    writer.writerow(header)
+                    write_header = False
 
-parser.add_argument('--out',  metavar='o', type=str, default="data",
-                    help='Filename to save data.')
+                writer.writerow(row)
 
-parser.add_argument('--webdriver-path', metavar='wp', type=str, default="chromedriver",
-                    help='Chrome webdriver path. If not provided, include webdriver in PATH env vars')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Download data from a NFe.')
 
-args = parser.parse_args()
+    parser.add_argument('--url',  metavar='url', type=str, required=True,
+                        help='URL to download NFe.')
 
-processor = NfeProcessor(args.webdriver_path)
-data = processor.process(args.url)
+    parser.add_argument('--format',  metavar='o', type=str, default='csv', choices=['json', 'csv'],
+                        help='Whether to export as csv or json. Defaults to json')
 
-if args.format == "json":
-    with open(args.out, 'w', encoding='utf-8') as outfile:
-        json.dump(data, outfile, ensure_ascii=False)
+    parser.add_argument('--out',  metavar='o', type=str, default="data",
+                        help='Filename to save data.')
 
-elif args.format == "csv":
-    csv_columns = list()
-    header_keys = [k for k in data.keys()]
-    header_keys.remove("items")
-    
-    csv_columns.extend(header_keys)
+    parser.add_argument('--webdriver-path', metavar='wp', type=str, default='chromedriver',
+                        help='Chrome webdriver path. If not provided, include webdriver in PATH env vars')
 
-    assert len(data["items"]) > 0, "Data contain no item"
+    args = parser.parse_args()
 
-    csv_columns.extend(data["items"][0].keys())
-
-    try:
-        with open(args.out, 'w', encoding='utf-8', newline="") as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=csv_columns, delimiter=';')
-            writer.writeheader()
-            header = dict(data)
-            del header["items"]
-            items = data["items"]
-            
-            dict_data = [{**i, **header} for i in items]
-
-            for d in dict_data:
-                writer.writerow(d)
-    except IOError:
-        print("I/O error")
-
-else:
-    print("Format not recognized")
+    main(args)
