@@ -21,7 +21,7 @@ Or install the application:
 ```shell
 $ pip install .
 ```
-*⚠️Note: you may have to install: *
+*⚠️Note: you may have to install:*
 ```shell
 $ pip install wheel
 ```
