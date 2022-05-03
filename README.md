@@ -106,9 +106,3 @@ If a `--format csv` flag is provided, then the result will be:
 "ESTABELECIMENTO";"12.345.678/0000-00";"RUA UM,000008,E 000 LJ A,BAIRRO,CIDADE,ES";0.0;59.92;"Dinheiro";258.54;258.54;262.52;37.0;3.98;"00000003";"PRODUTO 3";1.0;"UN";2.39;"R$";2.39
 "ESTABELECIMENTO";"12.345.678/0000-00";"RUA UM,000008,E 000 LJ A,BAIRRO,CIDADE,ES";0.0;59.92;"Dinheiro";258.54;258.54;262.52;37.0;3.98;"00000004";"PRODUTO 4";3.0;"UN";1.69;"R$";5.07
 ```` 
-
-## Improvements
-- [x] Convert data to CSV format
-- [ ] Generalize products' names avoiding duplicates
-- [ ] Generalize company name' names avoiding duplicates
-- [ ] Get address localtion with geo coordinates
