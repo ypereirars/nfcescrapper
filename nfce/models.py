@@ -1,3 +1,5 @@
+from datetime import datetime
+
 
 class Company(object):
     def __init__(self, name: str, cnpj: str, address: str) -> None:
@@ -63,6 +65,10 @@ class EletronicInvoice(object):
 
     def serialize(self) -> dict:
         return {
+            'access_key': self.access_key,
+            'number': self.number,
+            'serie': self.serie,
+            'issue_date': datetime.strftime(self.issue_date, '%Y-%m-%d %H:%M:%S%z'),
             'company': self.company.__dict__,
             'items': [item.__dict__ for item in self.items],
             'totals': self.totals.__dict__
