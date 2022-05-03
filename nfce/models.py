@@ -37,27 +37,29 @@ class PaymentTotals(object):
                  exchange,
                  tax,
                  payment_type,
-                 total_paid,
-                 total_to_pay,
-                 total_price,
+                 total_before_discount,
+                 total_after_discount,
                  total_items,
                  discounts) -> None:
         self.exchange = exchange
         self.tax = tax
         self.payment_type = payment_type
-        self.total_paid = total_paid
-        self.total_to_pay = total_to_pay
-        self.total_price = total_price
+        self.total_before_discount = total_before_discount
+        self.total_after_discount = total_after_discount
         self.total_items = total_items
         self.discounts = discounts
 
 
 class EletronicInvoice(object):
 
-    def __init__(self, company, items, totals) -> None:
+    def __init__(self, company, items, totals, access_key, number, serie, issue_date) -> None:
         self.company = company
         self.items = items
         self.totals = totals
+        self.access_key = access_key
+        self.number = number
+        self.serie = serie
+        self.issue_date = issue_date
 
     def serialize(self) -> dict:
         return {
@@ -70,7 +72,10 @@ class EletronicInvoice(object):
         company = self.company.__dict__.values()
         totals = self.totals.__dict__.values()
         header = [*self.company.__dict__.keys(), *self.totals.__dict__.keys(),
-                  'code', 'name', 'quantity', 'unity_of_measure', 'price', 'currency', 'total_price']
+                  'code', 'name', 'quantity', 'unity_of_measure', 'price', 'currency', 'total_price',
+                  'access_key', 'number', 'serie', 'issue_date']
+
         for item in self.items:
             yield (header, [*company, *totals, item.code, item.name, item.quantity,
-                            item.unity_of_measure, item.price, item.currency, item.total_price])
+                            item.unity_of_measure, item.price, item.currency, item.total_price,
+                            self.access_key, self.number, self.serie, self.issue_date])

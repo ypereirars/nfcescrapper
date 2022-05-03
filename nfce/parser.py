@@ -3,11 +3,31 @@ from nfce.models import (Company,
                          EletronicInvoice,
                          PaymentTotals,
                          Product)
+from datetime import datetime
 
 
 UNWANTED_WORDS = [r"UN: *", r"Vl. Unit.:", r"Qtde.:", r"Código:", r"CNPJ:", r"\(", r"\)", r"\n", r"\r", r"\t"]
 UNWANTED_WORDS_REGEX = re.compile('|'.join(UNWANTED_WORDS))
 
+
+def get_totals_info(totals: list, payment_type: str) -> dict:
+
+    values = {}
+    for total in totals:
+        if total.find('label') is None:
+            continue
+
+        key = sanitize_text(total.find('label').string)
+
+        if key == payment_type:
+            continue
+
+        key = 'tax' if 'Tributos Totais' in key else key.replace('R$:', '').strip()
+
+        value = to_float(total.find('span').text)
+        values[key] = value
+
+    return values
 
 def sanitize_text(text: str) -> str:
     """Sanitize text to remove unwanted characters
@@ -43,20 +63,23 @@ def to_float(number: str, radix: str = ',') -> float:
 
 class NFCeParser():
 
-    def __init__(self, content_selector='conteudo'):
+    def __init__(self, content_selector='conteudo', info_selector='infos'):
         self.content_selector = content_selector
+        self.info_selector = info_selector
         self.page = None
         self.content = None
 
     def parse(self, page) -> EletronicInvoice:
         self.page = page
         self.content = self.page.find("div", id=self.content_selector)
+        self.info = self.page.find("div", id=self.info_selector)
 
         company = self._get_company()
         totals = self._get_totals()
         items = self._get_items()
+        general_info = self._get_general_info()
 
-        invoice = EletronicInvoice(company, items, totals)
+        invoice = EletronicInvoice(company, items, totals, **general_info)
 
         return invoice
 
@@ -78,19 +101,21 @@ class NFCeParser():
         Returns:
             PaymentTotals: totals information
         """
-        totals = self.content.find_all("span", class_="totalNumb")
-        payment_type = self.content.find_all("label", class_="tx")[0].text
 
-        total_items = to_float(totals[0].text)
-        total_price = to_float(totals[1].text)
-        discounts = to_float(totals[2].text)
-        total_to_pay = to_float(totals[3].text)
+        totals = self.content.find_all("div", id="linhaTotal")
+        payment_type = sanitize_text(self.content.find_all("label", class_="tx")[0].text)
+
+        values = get_totals_info(totals, payment_type)
+
+        total_items = int(values.get('Qtd. total de itens:', 0))
+        total_after_discount = values.get('Valor a pagar', 0)
+        discounts = values.get('Descontos', 0)
+        total_before_discount = values.get('Valor total', total_after_discount-discounts)
         payment_type = sanitize_text(payment_type)
-        total_paid = to_float(totals[5].text)
-        exchange = to_float(totals[6].text)
-        tax = to_float(totals[7].text)
+        exchange = values.get('Troco', 0)
+        tax = values.get('tax', 0)
 
-        return PaymentTotals(exchange, tax, payment_type, total_paid, total_to_pay, total_price, total_items, discounts)
+        return PaymentTotals(exchange, tax, payment_type, total_before_discount, total_after_discount, total_items, discounts)
 
     def _get_items(self) -> list:
         """Get items from eletronic invoice
@@ -129,3 +154,30 @@ class NFCeParser():
             raise Exception(f"{not_processed_items} items could not be processed")
 
         return items
+
+    def _get_general_info(self) -> dict:
+        """Get general information from an invoice
+
+        Returns:
+            dict: general information
+        """
+
+        access_key = sanitize_text(self.info.find("span", class_="chave").text)
+        access_key = ''.join(access_key.split(' '))
+        general_info = {
+            'access_key': access_key,
+        }
+
+        try:
+            contents = self.info.find('ul', class_='ui-listview').find('li').contents
+            contents = list(filter(lambda el: el != '\n' and el.name != 'br' and el.name != 'strong', contents))
+            general_info['number'] = contents[0]
+            general_info['serie'] = contents[1]
+
+            date = contents[2].split('\n')[0]
+            date = ''.join(date.rsplit(':', 1)) # remove last occurrency of : and join to form the timezone
+            general_info['issue_date'] = datetime.strptime(date, '%d/%m/%Y %H:%M:%S%z')
+        except:
+            pass
+
+        return general_info
