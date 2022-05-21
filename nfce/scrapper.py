@@ -43,6 +43,7 @@ class NfeScrapper():
             nfe_data = self.content_parser.parse(page)
         except TimeoutException:
             print("Timed out waiting for page to load")
+            nfe_data = None
         finally:
             browser.close()
 
