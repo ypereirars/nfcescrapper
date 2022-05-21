@@ -68,7 +68,7 @@ class EletronicInvoice(object):
             'access_key': self.access_key,
             'number': self.number,
             'serie': self.serie,
-            'issue_date': datetime.strftime(self.issue_date, '%Y-%m-%d %H:%M:%S%z'),
+            'issue_date': '' if self.issue_date == '' else datetime.strftime(self.issue_date, '%Y-%m-%d %H:%M:%S%z'),
             'company': vars(self.company),
             'items': [vars(item) for item in self.items],
             'totals': vars(self.totals)

@@ -167,22 +167,26 @@ class NFCeParser():
             dict: general information
         """
 
-        access_key = sanitize_text(self.info.find("span", class_="chave").text)
-        access_key = ''.join(access_key.split(' '))
-        general_info = {
-            'access_key': access_key,
-        }
-
         try:
+            access_key = sanitize_text(self.info.find("span", class_="chave").text)
+            access_key = ''.join(access_key.split(' '))
             contents = self.info.find('ul', class_='ui-listview').find('li').contents
             contents = list(filter(lambda el: el != '\n' and el.name != 'br' and el.name != 'strong', contents))
-            general_info['number'] = contents[0]
-            general_info['serie'] = contents[1]
 
             date = contents[2].split('\n')[0]
             date = ''.join(date.rsplit(':', 1)) # remove last occurrency of : and join to form the timezone
-            general_info['issue_date'] = datetime.strptime(date, '%d/%m/%Y %H:%M:%S%z')
+            general_info = {
+                'access_key': access_key,
+                'number': contents[0],
+                'serie': contents[1],
+                'issue_date': datetime.strptime(date, '%d/%m/%Y %H:%M:%S%z')
+            }
         except:
-            pass
+            general_info = {
+                'access_key': '',
+                'number': '',
+                'serie': '',
+                'issue_date': ''
+            }
 
         return general_info
