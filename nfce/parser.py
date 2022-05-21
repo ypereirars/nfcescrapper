@@ -1,9 +1,9 @@
 import re
+from datetime import datetime
 from nfce.models import (Company,
                          EletronicInvoice,
                          PaymentTotals,
                          Product)
-from datetime import datetime
 
 
 UNWANTED_WORDS = [r"UN: *", r"Vl. Unit.:", r"Qtde.:", r"Código:", r"CNPJ:", r"\(", r"\)", r"\n", r"\r", r"\t"]
@@ -136,24 +136,29 @@ class NFCeParser():
 
         qty = len(products)
 
-        items = []
+        items = {}
         not_processed_items = 0
         for i in range(0, qty):
             try:
-                product = Product(sanitize_text(codes[i].text),
+                code = sanitize_text(codes[i].text)
+                if code in items.keys():
+                    items[code].quantity += to_float(quantities[i].text)
+                    items[code].total_price = items[code].quantity * items[code].price
+                else:
+                    product = Product(code,
                             sanitize_text(products[i].text),
                             to_float(unitary_prices[i].text),
                             to_float(quantities[i].text),
                             unity_of_measure=sanitize_text(uoms[i].text),
                             total_price=to_float(total_prices[i].text))
-                items.append(product)
+                    items[code] = product
             except Exception as ex:
                 not_processed_items += 1
 
         if not_processed_items > 0:
             raise Exception(f"{not_processed_items} items could not be processed")
 
-        return items
+        return list(items.values())
 
     def _get_general_info(self) -> dict:
         """Get general information from an invoice
