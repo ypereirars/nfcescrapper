@@ -69,15 +69,15 @@ class EletronicInvoice(object):
             'number': self.number,
             'serie': self.serie,
             'issue_date': datetime.strftime(self.issue_date, '%Y-%m-%d %H:%M:%S%z'),
-            'company': self.company.__dict__,
-            'items': [item.__dict__ for item in self.items],
-            'totals': self.totals.__dict__
+            'company': vars(self.company),
+            'items': [vars(item) for item in self.items],
+            'totals': vars(self.totals)
         }
 
     def to_csv(self) -> list:
-        company = self.company.__dict__.values()
-        totals = self.totals.__dict__.values()
-        header = [*self.company.__dict__.keys(), *self.totals.__dict__.keys(),
+        company = vars(self.company).values()
+        totals = vars(self.totals).values()
+        header = [*vars(self.company).keys(), *vars(self.totals).keys(),
                   'code', 'name', 'quantity', 'unity_of_measure', 'price', 'currency', 'total_price',
                   'access_key', 'number', 'serie', 'issue_date']
 
