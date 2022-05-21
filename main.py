@@ -67,11 +67,12 @@ if __name__ == '__main__':
 
     parser.add_argument('url',  metavar='url', type=str, help='URL to download the NFe.')
     parser.add_argument('--format', '-f', metavar='format', type=str, default='json', choices=['json', 'csv'],
-                        help='Output file format wich may either be json or csv.')
+                        help='Output file format wich may either be json or csv.  Default to `json`.')
     parser.add_argument('--output', '-o',  metavar='path', type=str, default=None,
                         help='File path location where to save data. If path is a folder, than the output will be saved'
                         ' in <path>/data.<format> where <format> is the same as the --format option. However if path is'
-                        ' a file, than the output will be saved in <path>.')
+                        ' a file, than the output will be saved in <path>. If `None`, then only prints the result to '
+                        'console.')
     parser.add_argument('--webdriver-path', '-w', metavar='path', type=str, default='chromedriver',
                         help='Chrome webdriver path. If not provided, it must be included in PATH env vars.')
 

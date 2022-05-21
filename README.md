@@ -52,25 +52,31 @@ $ sudo chmod +x /usr/bin/chromedriver
 From now, you might have chromedriver!
 
 ### Run the application
-In order to test this script, run the following command:
-
-```console
-> python nfescrapper/main.py\
---url ~/examples/data.html\
---out ~/examples/data.json
-```
-
 *chromedriver path may also be provided via `--webdriver-path path/to/chromedriver`*
 
-To scrap data from a real URL, let's assume the URL is http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=123, then run the following:
+#### Available arguments:
+```
+usage: python -m main <url to nfe> -o ~/data.json
 
-```console
-> python nfescrapper/main.py\
---url "http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=123"\
---out ~/examples/data.json
+Argument                 |Optional|Description
+---                      |---     |---
+`url`                    | No     | URL to download the NFe.
+`--help`, `-h`           | Yes    | Show help message and exit.
+`--format`, `-f`         | Yes    | Output file format wich may either be json or csv.
+`--output`, `-o`         | Yes    | File path location where to save data.
+`--webdriver-path`, `-w` | Yes    | Chrome webdriver path. If not provided, it must be included in `PATH` env vars.
 ```
 
-This will generate a JSON file as such:
+*For more information, `python -m main -h`*
+
+To scrap data run the following command, wich will export the result to `~/data.json`:
+
+```console
+> python nfescrapper/main.py <url to nfe> -o ~/data.json
+```
+
+#### Example
+Below is an example of a JSON file:
 ```json
 {
     "company_name": "ESTABELECIMENTO",
