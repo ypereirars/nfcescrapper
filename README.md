@@ -28,31 +28,8 @@ $ pip install wheel
 
 ## Instructions
 
-### Install Chrome & chromedriver
-If you already have Chrome installed, you can skip this part. First, you need to download and install the Google Chrome:
-
-```shell
-$ sudo apt update
-$ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-$ sudo dpkg -i google-chrome-stable_current_amd64.deb
-$ sudo apt-get install -f
-$ google-chrome --version
-```
-
-Then, download and install `chromedriver`:
-
-```shell
-$ wget https://chromedriver.storage.googleapis.com/<version>/chromedriver_linux64.zip
-$ unzip chromedriver_linux64.zip
-$ sudo mv chromedriver /usr/bin/chromedriver
-$ sudo chown root:root /usr/bin/chromedriver
-$ sudo chmod +x /usr/bin/chromedriver
-```
-
-From now, you might have chromedriver!
-
 ### Run the application
-*chromedriver path may also be provided via `--webdriver-path path/to/chromedriver`*
+There's no need to install webdriver. `ChromeDriverManager` will download and install the lastest chrome driver.
 
 #### Available arguments:
 ```
@@ -64,7 +41,6 @@ Argument                 |Optional|Description
 `--help`, `-h`           | Yes    | Show help message and exit.
 `--format`, `-f`         | Yes    | Output file format wich may either be json or csv.
 `--output`, `-o`         | Yes    | File path location where to save data.
-`--webdriver-path`, `-w` | Yes    | Chrome webdriver path. If not provided, it must be included in `PATH` env vars.
 ```
 
 *For more information, `python -m main -h`*
