@@ -7,7 +7,8 @@ from nfce import NFCeParser, NfeScrapper
 
 def main(args):
     parser = NFCeParser()
-    processor = NfeScrapper(parser, args.webdriver_path, wait_timeout=10)
+    processor = NfeScrapper(parser, wait_timeout=10)
+
     data = processor.get(args.url)
 
     if data is None:
@@ -73,8 +74,6 @@ if __name__ == '__main__':
                         ' in <path>/data.<format> where <format> is the same as the --format option. However if path is'
                         ' a file, than the output will be saved in <path>. If `None`, then only prints the result to '
                         'console.')
-    parser.add_argument('--webdriver-path', '-w', metavar='path', type=str, default='chromedriver',
-                        help='Chrome webdriver path. If not provided, it must be included in PATH env vars.')
 
     args = parser.parse_args()  
 
