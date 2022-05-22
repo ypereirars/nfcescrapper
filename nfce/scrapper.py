@@ -1,11 +1,13 @@
 
 from bs4 import BeautifulSoup
+from nfce.browsers import get_chrome_browser
+from nfce.parser import NFCeParser
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver import Chrome, ChromeOptions
+from selenium.webdriver.remote.webdriver import WebDriver 
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from nfce.parser import NFCeParser
+
 
 
 class NfeScrapper():
@@ -15,10 +17,9 @@ class NfeScrapper():
     """
 
     def __init__(self,
-        content_parser: NFCeParser,
-        chromedriver_path="chromedriver",
-        id_to_wait="tabResult",
-        wait_timeout=5):
+                 content_parser: NFCeParser,
+                 id_to_wait="tabResult",
+                 wait_timeout=5):
         """Configures an invoice processor.
 
         Args:
@@ -30,43 +31,26 @@ class NfeScrapper():
             Defaults to 5.
         """
         self.content_parser = content_parser
-        self.chromedriver_path = chromedriver_path
         self.timeout = wait_timeout
         self.id_to_wait = id_to_wait
 
-    def get(self, url):
-        browser = self._get_browser()
-        browser.get(url)
-
-        try:
-            page = self._get_page_data(browser)
-            nfe_data = self.content_parser.parse(page)
-        except TimeoutException:
-            print("Timed out waiting for page to load")
-            nfe_data = None
-        finally:
-            browser.close()
+    def get(self, url: str):
+        with get_chrome_browser() as browser:
+            try:
+                browser.get(url)
+                page = self._get_page_data(browser)
+                nfe_data = self.content_parser.parse(page)
+            except TimeoutException:
+                print("Timed out waiting for page to load")
+                nfe_data = None
 
         return nfe_data
 
-    def _get_browser(self) -> Chrome:
-        """ Get chrome webdriver, setting it to work in silence.
-
-        Returns:
-            Chrome: web browser
-        """
-
-        options = ChromeOptions()
-        options.add_argument("headless")
-        browser = Chrome(executable_path=self.chromedriver_path, chrome_options=options)
-
-        return browser
-
-    def _get_page_data(self, browser: Chrome) -> BeautifulSoup:
+    def _get_page_data(self, browser: WebDriver) -> BeautifulSoup:
         """ Get data from an invoice page
 
         Args:
-            browser (Chrome): web browser
+            browser (WebDriver): web browser
 
         Returns:
             BeautifulSoup: html page
