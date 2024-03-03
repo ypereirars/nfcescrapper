@@ -1,87 +1,84 @@
 from datetime import datetime
+from dataclasses import dataclass
+from typing import List
+
+from enum import StrEnum
 
 
-class Company(object):
-    def __init__(self, name: str, cnpj: str, address: str) -> None:
-        self.name = name
-        self.cnpj = cnpj
-        self.address = address
-
-    def __str__(self) -> str:
-        return f"{self.name} - {self.cnpj} - {self.address}"
+class TipoPagamento(StrEnum):
+    DINHEIRO = "Dinheiro"
+    CARTAO_CREDITO = "Cartão de Crédito"
+    CARTAO_DEBITO = "Cartão de Débito"
+    PIX = "PIX"
 
 
-class Product(object):
-
-    def __init__(self,
-                 code,
-                 name,
-                 price,
-                 quantity=1,
-                 currency='R$',
-                 unity_of_measure='UN',
-                 total_price=None) -> None:
-        self.code = code
-        self.name = name
-        self.price = price
-        self.quantity = quantity
-        self.currency = currency
-        self.unity_of_measure = unity_of_measure
-        self.total_price = self.price * self.quantity if total_price is None else total_price
-
-    def __str__(self):
-        return f'{self.code} - {self.name} - {self.currency}{self.price} - {self.quantity}{self.unity_of_measure} - {self.currency}{self.total_price}'
+@dataclass
+class Empresa:
+    razao_social: str
+    cnpj: str
+    endereco: str
 
 
-class PaymentTotals(object):
-
-    def __init__(self,
-                 exchange,
-                 tax,
-                 payment_type,
-                 total_before_discount,
-                 total_after_discount,
-                 total_items,
-                 discounts) -> None:
-        self.exchange = exchange
-        self.tax = tax
-        self.payment_type = payment_type
-        self.total_before_discount = total_before_discount
-        self.total_after_discount = total_after_discount
-        self.total_items = total_items
-        self.discounts = discounts
+@dataclass
+class Produto:
+    codigo: str
+    descricao: str
 
 
-class EletronicInvoice(object):
+@dataclass
+class Item:
+    produto: Produto
+    quantidade: int = 1
+    preco_unitario: float = 0.0
+    unidade_medida: str = "UN"
 
-    def __init__(self, company, items, totals, access_key, number, serie, issue_date) -> None:
-        self.company = company
-        self.items = items
-        self.totals = totals
-        self.access_key = access_key
-        self.number = number
-        self.serie = serie
-        self.issue_date = issue_date
+    @property
+    def preco_total(self) -> float:
+        return self.preco_unitario * self.quantidade
 
-    def serialize(self) -> dict:
+
+@dataclass
+class Totais:
+    itens: List[Item]
+    desconto: float = 0.0
+    imposto: float = 0.0
+    troco: float = 0.0
+    tipo_pagamento: TipoPagamento = TipoPagamento.DINHEIRO
+
+    @property
+    def valor(self) -> float:
+        return sum(item.valor_total for item in self.itens)
+
+    @property
+    def quantidade(self) -> int:
+        return len(self.itens)
+
+    @property
+    def valor_com_desconto(self) -> float:
+        return self.valor - self.desconto
+
+
+@dataclass
+class NotaFiscalEletronica:
+    empresa: Empresa
+    itens: List[Item]
+    totais: Totais
+    chave_acesso: str
+    numero: str
+    serie: str
+    data_emissao: datetime
+
+    def to_dict(self) -> dict:
         return {
-            'access_key': self.access_key,
-            'number': self.number,
-            'serie': self.serie,
-            'issue_date': '' if self.issue_date == '' else datetime.strftime(self.issue_date, '%Y-%m-%d %H:%M:%S%z'),
-            'company': vars(self.company),
-            'items': [vars(item) for item in self.items],
-            'totals': vars(self.totals)
+            "chave_acesso": self.chave_acesso,
+            "numero": self.numero,
+            "serie": self.serie,
+            "data_emissao": (
+                ""
+                if self.data_emissao == ""
+                else datetime.strftime(self.data_emissao, "%Y-%m-%d %H:%M:%S%z")
+            ),
+            "empresa": vars(self.empresa),
+            "itens": [vars(item) for item in self.itens],
+            "totais": vars(self.totais),
         }
-
-    def to_csv(self) -> list:
-        company = vars(self.company).values()
-        totals = vars(self.totals).values()
-        header = [*vars(self.company).keys(), *vars(self.totals).keys(),
-                  'code', 'name', 'quantity', 'unity_of_measure', 'price', 'currency', 'total_price',
-                  'access_key', 'number', 'serie', 'issue_date']
-
-        for item in self.items:
-            yield (header, [*company, *totals, item.code, item.name, item.quantity,
-                            item.unity_of_measure, item.price, item.currency, item.total_price,
-                            self.access_key, self.number, self.serie, self.issue_date])
