@@ -1,3 +1,11 @@
+from .models import Empresa, Item, NotaFiscalEletronica, Produto, Totais, TipoPagamento
 
-from nfce.parser import NFCeParser
-from nfce.scrapper import NfeScrapper
+
+__all__ = [
+    "Empresa",
+    "Item",
+    "NotaFiscalEletronica",
+    "Produto",
+    "Totais",
+    "TipoPagamento",
+]

@@ -1,8 +1,17 @@
 from datetime import datetime
 from dataclasses import dataclass
 from typing import List
-
 from enum import StrEnum
+
+
+__all__ = [
+    "TipoPagamento",
+    "Empresa",
+    "Produto",
+    "Item",
+    "Totais",
+    "NotaFiscalEletronica",
+]
 
 
 class TipoPagamento(StrEnum):
