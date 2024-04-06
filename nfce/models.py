@@ -1,6 +1,5 @@
 from datetime import datetime
 from dataclasses import dataclass
-from typing import List
 from enum import StrEnum
 
 
@@ -10,6 +9,8 @@ __all__ = [
     "Produto",
     "Item",
     "Totais",
+    "Tributacao",
+    "InformacoesNota",
     "NotaFiscalEletronica",
 ]
 
@@ -22,10 +23,29 @@ class TipoPagamento(StrEnum):
 
 
 @dataclass
+class Endereco:
+    logradouro: str = ""
+    numero: str = ""
+    complemento: str = ""
+    bairro: str = ""
+    municipio: str = ""
+    uf: str = ""
+    cep: str = ""
+
+
+@dataclass
 class Empresa:
     razao_social: str
     cnpj: str
-    endereco: str
+    endereco: Endereco
+
+    @property
+    def __dict__(self):
+        return {
+            "razao_social": self.razao_social,
+            "cnpj": self.cnpj,
+            "endereco": vars(self.endereco),
+        }
 
 
 @dataclass
@@ -45,49 +65,82 @@ class Item:
     def preco_total(self) -> float:
         return self.preco_unitario * self.quantidade
 
+    @property
+    def __dict__(self):
+        return {
+            "produto": vars(self.produto),
+            "quantidade": self.quantidade,
+            "preco_unitario": self.preco_unitario,
+            "unidade_medida": self.unidade_medida,
+            "preco_total": self.preco_total,
+        }
+
 
 @dataclass
 class Totais:
-    itens: List[Item]
     desconto: float = 0.0
-    imposto: float = 0.0
     troco: float = 0.0
+    valor_total: float = 0.0
+    valor_a_pagar: float = 0.0
+    quantidade_itens: int = 0
     tipo_pagamento: TipoPagamento = TipoPagamento.DINHEIRO
-
-    @property
-    def valor(self) -> float:
-        return sum(item.valor_total for item in self.itens)
-
-    @property
-    def quantidade(self) -> int:
-        return len(self.itens)
-
-    @property
-    def valor_com_desconto(self) -> float:
-        return self.valor - self.desconto
 
 
 @dataclass
-class NotaFiscalEletronica:
-    empresa: Empresa
-    itens: List[Item]
-    totais: Totais
+class Tributacao:
+    federal: float = 0.0
+    estadual: float = 0.0
+    municipal: float = 0.0
+    fonte: str = ""
+
+    @property
+    def total(self) -> float:
+        return self.federal + self.estadual + self.municipal
+
+
+@dataclass
+class InformacoesNota:
     chave_acesso: str
     numero: str
     serie: str
-    data_emissao: datetime
+    data_emissao: datetime = None
+    protocolo_autorizacao: str = ""
+    data_autorizacao: datetime = None
+    tributacao: Tributacao = None
 
-    def to_dict(self) -> dict:
+    @property
+    def __dict__(self):
         return {
             "chave_acesso": self.chave_acesso,
             "numero": self.numero,
             "serie": self.serie,
             "data_emissao": (
-                ""
-                if self.data_emissao == ""
-                else datetime.strftime(self.data_emissao, "%Y-%m-%d %H:%M:%S%z")
+                self.data_emissao.strftime("%Y-%m-%d %H:%M:%S%z")
+                if self.data_emissao
+                else ""
             ),
+            "protocolo_autorizacao": self.protocolo_autorizacao,
+            "data_autorizacao": (
+                self.data_autorizacao.strftime("%Y-%m-%d %H:%M:%S%z")
+                if self.data_autorizacao
+                else ""
+            ),
+            "tributacao": vars(self.tributacao),
+        }
+
+
+@dataclass
+class NotaFiscalEletronica:
+    empresa: Empresa
+    informacoes: InformacoesNota
+    itens: list[Item]
+    totais: Totais
+
+    @property
+    def __dict__(self):
+        return {
             "empresa": vars(self.empresa),
+            "informacoes": vars(self.informacoes),
             "itens": [vars(item) for item in self.itens],
             "totais": vars(self.totais),
         }
