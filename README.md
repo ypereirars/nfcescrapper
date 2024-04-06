@@ -1,6 +1,6 @@
 # NFC-e - Nota Fiscal de Consumidor Eletrônica
 
-Python webscrapper for downloading information from a NFe and serialize it to JSON or CSV (other formats may be supported in future version).
+Python web scraper for downloading information from a NFe and serialize it to JSON or CSV (other formats may be supported in future version).
 
 ## Setup
 Create a virtual environment:
@@ -48,7 +48,7 @@ Argument                 |Optional|Description
 To scrap data run the following command, wich will export the result to `~/data.json`:
 
 ```console
-> python nfescrapper/main.py <url to nfe> -o ~/data.json
+> python nfescraper/main.py <url to nfe> -o ~/data.json
 ```
 
 #### Example
