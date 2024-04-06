@@ -1,14 +1,24 @@
-from selenium.webdriver import Chrome
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+import os
+from selenium.webdriver import Firefox
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
+from webdriver_manager.firefox import GeckoDriverManager
 
 
-def get_chrome_browser():
+def get_browser() -> Firefox:
+    """Get a headless Firefox browser
+
+    Returns:
+        Firefox: headless Firefox browser
+    """
     options = Options()
     options.add_argument("--headless")
 
-    service = Service(ChromeDriverManager().install())
-    browser = Chrome(service=service, options=options)
+    WEBDRIVER_PATH = os.environ.get("WEBDRIVER_PATH", "")
+    if os.path.exists(WEBDRIVER_PATH):
+        WEBDRIVER_PATH = GeckoDriverManager().install()
+
+    service = Service(WEBDRIVER_PATH)
+    browser = Firefox(service=service, options=options)
 
     return browser
