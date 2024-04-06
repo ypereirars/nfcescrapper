@@ -1,0 +1,6 @@
+services:
+  nfce-api:
+    build:
+      context: .
+    ports:
+      - 5001:80
