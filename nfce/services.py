@@ -4,8 +4,8 @@ from .models import NotaFiscalEletronica
 from .browsers import get_browser
 
 
-def read_invoice(url: str) -> NotaFiscalEletronica:
-    """Reads an invoice from a given URL.
+def scrape_invoice(url: str) -> NotaFiscalEletronica:
+    """Scrap invoice data from a URL.
 
     Args:
         url (str): URL to scrap.

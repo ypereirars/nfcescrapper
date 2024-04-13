@@ -1,11 +1,11 @@
 import argparse
-from nfce.services import read_invoice
+from nfce.services import scrape_invoice
 from nfce.utils import save_json
 
 
 def main(url: str, output: str = None):
 
-    invoice = read_invoice(url)
+    invoice = scrape_invoice(url)
 
     if output and output.endswith(".json"):
         save_json(invoice, output)
