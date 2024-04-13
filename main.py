@@ -1,5 +1,5 @@
 import argparse
-from nfce.scrapers import read_invoice
+from nfce.services import read_invoice
 from nfce.utils import save_json
 
 

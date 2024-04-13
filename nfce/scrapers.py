@@ -1,12 +1,11 @@
 from bs4 import BeautifulSoup
-from .parsers import Parser, NfeParser
+from .parsers import Parser
 from .models import NotaFiscalEletronica
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from .browsers import get_browser
 
 __all__ = ["NfeScraper"]
 
@@ -65,19 +64,3 @@ class NfeScraper:
         data = BeautifulSoup(source, "html.parser")
 
         return data
-
-
-def read_invoice(url: str) -> dict:
-    """Reads an invoice from a given URL.
-
-    Args:
-        url (str): URL to scrap.
-
-    Returns:
-        dict: invoice data.
-    """
-    with get_browser() as browser:
-        scraper = NfeScraper(NfeParser(), browser)
-        data = scraper.scrap(url)
-
-        return vars(data) if data else {}
