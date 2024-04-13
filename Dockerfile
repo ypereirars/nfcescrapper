@@ -26,5 +26,3 @@ RUN python -m pip install -r requirements.txt --no-cache-dir
 
 # Expose the port that the application listens on.
 EXPOSE 80
-
-CMD ["uvicorn", "nfce.api:app", "--host", "0.0.0.0", "--port", "80"]
