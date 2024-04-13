@@ -33,6 +33,22 @@ def sanitize_text(text: str) -> str:
         return ""
 
 
+def clean_text(text: str) -> str:
+    """Clean text to remove unwanted characters
+
+    Args:
+        text (str): text to be cleared
+
+    Returns:
+        str: cleared text
+    """
+    try:
+        text = re.sub(r"[\s.\-/]", "", text)
+        return text.strip()
+    except Exception as ex:
+        return ""
+
+
 def to_float(number: str, radix: str = ",", default: float = 0.0) -> float:
     """Convert a string to float point number
 
