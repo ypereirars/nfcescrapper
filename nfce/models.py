@@ -16,10 +16,23 @@ __all__ = [
 
 
 class TipoPagamento(StrEnum):
-    DINHEIRO = "Dinheiro"
-    CARTAO_CREDITO = "Cartão de Crédito"
-    CARTAO_DEBITO = "Cartão de Débito"
+    DINHEIRO = "DINHEIRO"
+    CARTAO_CREDITO = "CARTÃO DE CRÉDITO"
+    CARTAO_DEBITO = "CARTÃO DE DÉBITO"
     PIX = "PIX"
+
+    @staticmethod
+    def from_str(label):
+        if label in ("DINHEIRO",):
+            return TipoPagamento.DINHEIRO
+        elif label in ("CARTÃO DE DÉBITO", "CARTÃO DÉBITO", "DÉBITO"):
+            return TipoPagamento.CARTAO_DEBITO
+        elif label in ("CARTÃO DE CRÉDITO", "CARTÃO CRÉDITO", "CRÉDITO"):
+            return TipoPagamento.CARTAO_CREDITO
+        elif label in ("PIX",):
+            return TipoPagamento.PIX
+        else:
+            raise NotImplementedError
 
 
 @dataclass
@@ -44,7 +57,7 @@ class Empresa:
         return {
             "razao_social": self.razao_social,
             "cnpj": self.cnpj,
-            "endereco": vars(self.endereco),
+            **vars(self.endereco),
         }
 
 
@@ -68,7 +81,7 @@ class Item:
     @property
     def __dict__(self):
         return {
-            "produto": vars(self.produto),
+            **vars(self.produto),
             "quantidade": self.quantidade,
             "preco_unitario": self.preco_unitario,
             "unidade_medida": self.unidade_medida,
@@ -139,8 +152,10 @@ class NotaFiscalEletronica:
     @property
     def __dict__(self):
         return {
-            "empresa": vars(self.empresa),
-            "informacoes": vars(self.informacoes),
-            "itens": [vars(item) for item in self.itens],
-            "totais": vars(self.totais),
+            **vars(self.informacoes),
+            **vars(self.empresa),
+            "itens": {
+                **vars(self.totais),
+                "produtos": [vars(item) for item in self.itens],
+            },
         }
