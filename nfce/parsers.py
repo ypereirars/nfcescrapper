@@ -10,8 +10,9 @@ from nfce.models import (
     InformacoesNota,
     Produto,
     Tributacao,
+    TipoPagamento,
 )
-from .utils import to_float, sanitize_text
+from .utils import to_float, sanitize_text, clean_text
 
 
 from abc import ABC, abstractmethod
@@ -40,9 +41,21 @@ class EmpresaParser(Parser):
             Company: company data
         """
         info = self.content.find_all("div", class_="text")
+        address = self._get_address(info)
+        name = self.content.find_all("div", class_="txtTopo")[0].text
+
+        company = Empresa(
+            sanitize_text(name).upper(),
+            clean_text(sanitize_text(info[0].text)),
+            address,
+        )
+        return company
+
+    def _get_address(self, info):
         address_text = sanitize_text(sanitize_text(info[1].text))
         try:
-            address = address_text.split(",")
+            address = address_text.upper().split(",")
+            assert len(address[4]) == 2
 
             address = Endereco(
                 address[0],
@@ -54,13 +67,7 @@ class EmpresaParser(Parser):
             )
         except:
             address = Endereco(address_text)
-
-        company = Empresa(
-            sanitize_text(self.content.find_all("div", class_="txtTopo")[0].text),
-            sanitize_text(info[0].text),
-            address,
-        )
-        return company
+        return address
 
 
 class InformacoesNotaParser(Parser):
@@ -107,7 +114,7 @@ class InformacoesNotaParser(Parser):
             tax = self._get_tax_info()
 
             info = InformacoesNota(
-                access_key,
+                clean_text(access_key),
                 contents[0],
                 contents[1],
                 datetime.strptime(date, "%d/%m/%Y %H:%M:%S%z"),
@@ -173,8 +180,8 @@ class ItensParser(Parser):
                 continue
 
             price = to_float(self.unitary_prices[i].text)
-            uom = sanitize_text(self.uoms[i].text)
-            product_description = sanitize_text(self.products[i].text)
+            uom = sanitize_text(self.uoms[i].text).upper()
+            product_description = sanitize_text(self.products[i].text).upper()
 
             product = Produto(code, product_description)
             item = Item(
@@ -210,7 +217,6 @@ class TotaisParser(Parser):
         total_before_discount = values.get(
             "Valor total", total_after_discount - discounts
         )
-        payment_type = sanitize_text(payment_type)
         exchange = values.get("Troco", 0)
 
         return Totais(
@@ -219,7 +225,7 @@ class TotaisParser(Parser):
             total_before_discount,
             total_after_discount,
             total_items,
-            payment_type,
+            TipoPagamento.from_str(payment_type.upper()),
         )
 
     def _get_totals_values(self, totals: list, payment_type: str) -> dict:
