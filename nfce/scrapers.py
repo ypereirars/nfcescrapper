@@ -43,9 +43,8 @@ class NfeScraper:
             self.browser.get(url)
             page = self._get_page_data()
             nfe_data = self.content_parser.parse(page)
-        except TimeoutException:
-            print("Timed out waiting for page to load")
-            nfe_data = None
+        except TimeoutException as e:
+            raise TimeoutException(f"Timed out waiting for page to load {e}") from e
 
         return nfe_data
 
