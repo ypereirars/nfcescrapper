@@ -55,7 +55,6 @@ class EmpresaParser(Parser):
         address_text = sanitize_text(sanitize_text(info[1].text))
         try:
             address = address_text.upper().split(",")
-            assert len(address[4]) == 2
 
             address = Endereco(
                 address[0],
@@ -63,7 +62,7 @@ class EmpresaParser(Parser):
                 address[2],
                 address[3],
                 address[4],
-                address[5],
+                address[5] if len(address[5]) == 2 else "",
             )
         except:
             address = Endereco(address_text)
