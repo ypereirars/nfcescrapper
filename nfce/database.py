@@ -1,6 +1,20 @@
 import psycopg2
 import os
 from .models import Item, Empresa, Produto, NotaFiscalEletronica
+import logging
+
+import sys
+
+logger = logging.getLogger(__name__)
+formatter = logging.Formatter(
+    '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
+)
+
+console_output_handler = logging.StreamHandler(sys.stderr)
+console_output_handler.setFormatter(formatter)
+logger.addHandler(console_output_handler)
+
+logger.setLevel(logging.INFO)
 
 
 def save(invoice: NotaFiscalEletronica):
@@ -10,28 +24,30 @@ def save(invoice: NotaFiscalEletronica):
         host=os.getenv("POSTGRES_HOST"),
         database=os.getenv("POSTGRES_DB"),
     )
+
     try:
+        logger.info("Checking if invoice already saved")
         invoice_id = get_invoice_by_key(invoice.informacoes.chave_acesso, connection)
 
         if invoice_id != 0:
-            print(f"Invoice with ID {invoice_id} already saved")
+            logger.info(f"Invoice with ID {invoice_id} already saved")
             return
 
         company_id = get_company_by_cnpj(invoice.empresa.cnpj, connection)
         if company_id == 0:
-            print("Saving company")
+            logger.info("Saving company")
             company_id = save_company(invoice.empresa, connection)
 
-        print(f"Company ID: {company_id}")
+        logger.info(f"Company ID: {company_id}")
 
-        print("Saving invoice")
+        logger.info("Saving invoice")
         invoice_id = save_invoice(invoice, company_id, connection)
-        print("Invoice ID", invoice_id)
+        logger.info("Invoice ID", invoice_id)
 
-        print("Saving products")
+        logger.info("Saving products")
         product_ids = save_product((item.produto for item in invoice.itens), connection)
 
-        print("Saving invoice items")
+        logger.info("Saving invoice items")
         items_id = save_invoice_items(
             invoice_id, product_ids, invoice.itens, connection
         )
@@ -43,15 +59,17 @@ def save(invoice: NotaFiscalEletronica):
             and len(items_id) > 0
         ):
             connection.commit()
-            print("Invoice saved")
+            logger.info("Invoice saved")
         else:
-            print("Error saving invoice")
+            logger.error("Error saving invoice")
             connection.rollback()
     except Exception as ex:
-        print("Error saving", ex)
+        logger.error("Error saving", ex)
         connection.rollback()
     finally:
         connection.close()
+
+    return invoice_id
 
 
 def save_company(company: Empresa, connection):
