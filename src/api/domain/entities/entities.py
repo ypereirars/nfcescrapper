@@ -4,7 +4,7 @@ from ..value_objects import Address, Taxes, Totals
 
 @dataclass
 class Entity:
-    id: int = 0
+    id: int
 
 
 @dataclass
@@ -16,9 +16,9 @@ class User(Entity):
 
 @dataclass
 class Company(Entity):
+    address: Address
     name: str = ""
     cnpj: str = ""
-    address: Address
 
     @property
     def __dict__(self):
@@ -34,6 +34,9 @@ class Company(Entity):
 class Product(Entity):
     code: str = ""
     description: str = ""
+
+    def __str__(self):
+        return f"{self.code:0>13} {self.description}"
 
 
 @dataclass
@@ -64,16 +67,16 @@ class Item(Entity):
 
 @dataclass
 class EletronicInvoice(Entity):
+    company: Company
+    items: list[Item]
+    totals: Totals
+    taxes: Taxes
     access_key: str = ""
     number: str = ""
     series: str = ""
     issue_date: str = ""
     authorization_protocol: str = ""
     authorization_date: str = ""
-    company: Company
-    items: list[Item]
-    totals: Totals
-    taxes: Taxes
 
     @property
     def __dict__(self):
