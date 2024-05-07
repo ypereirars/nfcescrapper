@@ -1,9 +1,12 @@
 from api.domain import Address, Company
+from api.domain.entities.entities import EletronicInvoice
+from api.domain.value_objects.value_objects import Taxes
 from api.ports.services import Service
 from api.domain import Product
 from api.repositories.company import CompanyRepository
+from api.repositories.invoice import InvoiceRepository
 from api.repositories.product import ProductRepository
-from api.routers.schema import CompanyInput, CompanyOutput
+from api.routers.schema import CompanyInput, CompanyOutput, InvoiceModel
 
 
 class ProductService(Service):
@@ -93,4 +96,67 @@ class CompanyService(Service):
             city=entity.address.city,
             state=entity.address.state,
             zip_code=entity.address.zip_code,
+        )
+
+
+class InvoiceService(Service):
+
+    def __init__(self, repository: InvoiceRepository):
+        self.repository = repository
+
+    def save(self, entity: InvoiceModel) -> None:
+        entity = InvoiceService.__from_basemodel(entity)
+        self.repository.save(entity)
+
+    def delete(self, id: int) -> None:
+        self.repository.delete(id)
+
+    def find_by_id(self, id: int) -> InvoiceModel:
+        return self.repository.find_by_id(id)
+
+    def find_all(self) -> list[InvoiceModel]:
+        invoices = self.repository.find_all()
+
+        return [InvoiceModel.from_entity(invoice) for invoice in invoices]
+
+    def update(self, entity: InvoiceModel) -> None:
+        entity = InvoiceService.__from_basemodel(entity)
+        self.repository.update(entity)
+
+    def find_by_access_key(self, access_key: str) -> InvoiceModel:
+        return self.repository.find_by_access_key(access_key)
+
+    @staticmethod
+    def __from_basemodel(entity: InvoiceModel) -> EletronicInvoice:
+        taxes = Taxes(
+            federal=entity.federal_tax,
+            state=entity.state_tax,
+            municipal=entity.municipal_tax,
+            source=entity.source,
+        )
+
+        company = Company(
+            id=entity.company_id,
+            cnpj=entity.cnpj,
+            name=entity.company.name,
+            address=Address(
+                street=entity.company.street,
+                number=entity.company.number,
+                neighborhood=entity.company.neighborhood,
+                city=entity.company.city,
+                state=entity.company.state,
+                complement=entity.company.complement,
+                zip_code=entity.company.zip_code,
+            ),
+        )
+
+        return EletronicInvoice(
+            company=company,
+            access_key=entity.access_key,
+            number=entity.number,
+            series=entity.series,
+            issue_date=entity.issue_date,
+            authorization_protocol=entity.authorization_protocol,
+            authorization_date=entity.authorization_date,
+            taxes=taxes,
         )
