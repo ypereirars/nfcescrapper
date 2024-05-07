@@ -5,10 +5,9 @@ import os
 
 from api.repositories.company import CompanyRepository
 from .database.schema import PostgresDatabase
-from .ports.repositories import Repository
 from .repositories.product import ProductRepository
-from .services.services import CompanyService
-from .services.services import ProductService
+from .services.services import CompanyService, ProductService, InvoiceService
+from .repositories.invoice import InvoiceRepository
 from .ports.services import Service
 
 from dotenv import load_dotenv
@@ -41,6 +40,12 @@ def get_companies_repository(
     return CompanyRepository(postgres_client)
 
 
+def get_invoices_repository(
+    postgres_client: PostgresDatabase = Depends(get_postgres_client),
+) -> PostgresDatabase:
+    return InvoiceRepository(postgres_client)
+
+
 def get_products_services(
     repository: Annotated[ProductRepository, Depends(get_products_repository)],
 ) -> Service:
@@ -51,3 +56,9 @@ def get_companies_services(
     repository: Annotated[CompanyRepository, Depends(get_companies_repository)],
 ) -> Service:
     return CompanyService(repository)
+
+
+def get_invoices_services(
+    repository: Annotated[InvoiceRepository, Depends(get_invoices_repository)],
+) -> Service:
+    return InvoiceService(repository)

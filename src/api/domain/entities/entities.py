@@ -41,10 +41,11 @@ class Product(Entity):
 
 @dataclass
 class Item(Entity):
+    invoice_id: int
     product: Product
     quantity: int = 1
     unit_price: float = 0.0
-    uom: str = "UN"
+    unity_of_measurement: str = "UN"
 
     @property
     def total_price(self) -> float:
@@ -60,7 +61,7 @@ class Item(Entity):
             **vars(product),
             "quantity": self.quantity,
             "unit_price": self.unit_price,
-            "uom": self.uom,
+            "unity_of_measurement": self.unity_of_measurement,
             "total_price": self.total_price,
         }
 

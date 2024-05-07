@@ -55,8 +55,8 @@ class Item(Base):
     product_id = Column(Integer, ForeignKey("produtos.id"), name="id_produto")
     invoice_id = Column(Integer, ForeignKey("notas_fiscais.id"), name="id_nota_fiscal")
     quantity = Column(Integer, name="quantidade")
-    price = Column(Integer, name="preco_unitario")
-    unit_of_measurement = Column(Text, name="unidade_medida")
+    unit_price = Column(Integer, name="preco_unitario")
+    unity_of_measurement = Column(Text, name="unidade_medida")
     product = relationship("Product", backref="notas_fiscais", lazy=True)
     invoice = relationship("Invoice", backref="notas_fiscais", viewonly=True, lazy=True)
 

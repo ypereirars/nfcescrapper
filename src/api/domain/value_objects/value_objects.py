@@ -23,6 +23,7 @@ class PaymentType(Enum):
         else:
             raise NotImplementedError
 
+
 @dataclass
 class Address:
     street: str = ""
@@ -33,6 +34,7 @@ class Address:
     state: str = ""
     zip_code: str = ""
 
+
 @dataclass
 class Totals:
     payment_type: PaymentType
@@ -42,11 +44,13 @@ class Totals:
     total_after_discount: float = 0.0
     total_items: int = 0
 
+
 @dataclass
 class Taxes:
     federal: float = 0.0
     state: float = 0.0
     municipal: float = 0.0
+    source: str = ""
 
     @property
     def total(self) -> float:
