@@ -4,7 +4,9 @@ from fastapi import Depends
 import os
 from .database.schema import PostgresDatabase
 from .ports.repositories import Repository
-from .repositories.repositories import ProductRepository
+from .repositories.product import ProductRepository
+from .services.services import ProductService
+from .ports.services import Service
 
 from dotenv import load_dotenv
 
@@ -24,7 +26,13 @@ def get_postgres_client() -> PostgresDatabase:
     raise ValueError("Missing environment variables for Postgres connection")
 
 
-def get_products_repository(
-    postgres_client: Annotated[PostgresDatabase, Depends(get_postgres_client)],  # type: ignore
-) -> Repository:
+def get_service_client(
+    postgres_client: PostgresDatabase = Depends(get_postgres_client),
+) -> PostgresDatabase:
     return ProductRepository(postgres_client)
+
+
+def get_products_services(
+    repository: Annotated[ProductRepository, Depends(get_service_client)],
+) -> Service:
+    return ProductService(repository)
