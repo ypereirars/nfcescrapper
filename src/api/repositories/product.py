@@ -22,10 +22,10 @@ class ProductRepository(Repository):
                 session.rollback()
                 raise e
 
-    def delete(self, entity: Product) -> None:
+    def delete(self, id: int) -> None:
         with self.client as session:
             try:
-                session.query(self.client.Product).filter_by(id=entity.id).delete()
+                session.query(self.client.Product).filter_by(id=id).delete()
                 session.commit()
             except Exception as e:
                 session.rollback()

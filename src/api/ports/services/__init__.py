@@ -1,20 +1,21 @@
 from abc import ABC
-from api.domain import Entity
+
+from pydantic import BaseModel
 
 
 class Service(ABC):
 
-    def save(self, entity: Entity) -> None:
+    def save(self, entity: BaseModel) -> None:
         pass
 
-    def delete(self, entity: Entity) -> None:
+    def delete(self, entity: BaseModel) -> None:
         pass
 
-    def find_by_id(self, id: int) -> Entity:
+    def find_by_id(self, id: int) -> BaseModel:
         pass
 
-    def find_all(self) -> list[Entity]:
+    def find_all(self) -> list[BaseModel]:
         pass
 
-    def update(self, entity: Entity) -> None:
+    def update(self, entity: BaseModel) -> None:
         pass

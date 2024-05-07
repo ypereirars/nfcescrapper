@@ -4,10 +4,10 @@ from api.domain import Entity
 
 class Repository(ABC):
 
-    def save(self, entity: Entity) -> None:
+    def save(self, entity: Entity) -> Entity:
         pass
 
-    def delete(self, entity: Entity) -> None:
+    def delete(self, id: int) -> None:
         pass
 
     def find_by_id(self, id: int) -> Entity:

@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status, HTTPException
 
 from api.dependencies import get_products_services
-from api.repositories.product import ProductRepository
+from api.services.services import ProductService
 from .schema import ProductInput, ProductOutput
 from api.domain import Product
 
@@ -12,7 +12,7 @@ router = APIRouter(prefix="/products")
 
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_all_products(
-    repository: Annotated[ProductRepository, Depends(get_products_services)]
+    repository: Annotated[ProductService, Depends(get_products_services)]
 ) -> list[ProductOutput]:
 
     return repository.find_all()
@@ -21,7 +21,7 @@ async def get_all_products(
 @router.get("/{product_id}", status_code=status.HTTP_200_OK)
 async def get_product(
     product_id: int,
-    repository: Annotated[ProductRepository, Depends(get_products_services)],
+    repository: Annotated[ProductService, Depends(get_products_services)],
 ) -> None:
     try:
         product_id = int(product_id)
@@ -50,7 +50,7 @@ async def get_product(
 async def update_product(
     product_id: int,
     product: ProductInput,
-    repository: Annotated[ProductRepository, Depends(get_products_services)],
+    repository: Annotated[ProductService, Depends(get_products_services)],
 ) -> None:
     try:
         product_id = int(product_id)
@@ -75,7 +75,7 @@ async def update_product(
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_product(
     product: ProductInput,
-    repository: Annotated[ProductRepository, Depends(get_products_services)],
+    repository: Annotated[ProductService, Depends(get_products_services)],
 ) -> ProductOutput:
 
     entity = product.to_entity(0)
@@ -88,7 +88,7 @@ async def create_product(
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(
     product_id: int,
-    repository: Annotated[ProductRepository, Depends(get_products_services)],
+    repository: Annotated[ProductService, Depends(get_products_services)],
 ) -> None:
     """Delete a product by it's ID
 
@@ -108,13 +108,13 @@ async def delete_product(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ID do produto inválido"
         )
 
-    repository.delete(Product(id=product_id))
+    repository.delete(product_id)
 
 
 @router.get("/code/{code}", status_code=status.HTTP_200_OK)
 async def get_product_by_code(
     code: str,
-    repository: Annotated[ProductRepository, Depends(get_products_services)],
+    repository: Annotated[ProductService, Depends(get_products_services)],
 ) -> None:
     product = repository.find_by_code(code)
 
