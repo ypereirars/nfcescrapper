@@ -2,9 +2,12 @@ from functools import lru_cache
 from typing import Annotated
 from fastapi import Depends
 import os
+
+from api.repositories.company import CompanyRepository
 from .database.schema import PostgresDatabase
 from .ports.repositories import Repository
 from .repositories.product import ProductRepository
+from .services.services import CompanyService
 from .services.services import ProductService
 from .ports.services import Service
 
@@ -26,13 +29,25 @@ def get_postgres_client() -> PostgresDatabase:
     raise ValueError("Missing environment variables for Postgres connection")
 
 
-def get_service_client(
+def get_products_repository(
     postgres_client: PostgresDatabase = Depends(get_postgres_client),
 ) -> PostgresDatabase:
     return ProductRepository(postgres_client)
 
 
+def get_companies_repository(
+    postgres_client: PostgresDatabase = Depends(get_postgres_client),
+) -> PostgresDatabase:
+    return CompanyRepository(postgres_client)
+
+
 def get_products_services(
-    repository: Annotated[ProductRepository, Depends(get_service_client)],
+    repository: Annotated[ProductRepository, Depends(get_products_repository)],
 ) -> Service:
     return ProductService(repository)
+
+
+def get_companies_services(
+    repository: Annotated[CompanyRepository, Depends(get_companies_repository)],
+) -> Service:
+    return CompanyService(repository)
