@@ -106,12 +106,12 @@ async def delete_company(
     service.delete(company_id)
 
 
-@router.get("/code/{code}", status_code=status.HTTP_200_OK)
+@router.get("/cnpj/{cnpj}", status_code=status.HTTP_200_OK)
 async def get_company_by_cnpj(
-    code: str,
+    cnpj: str,
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> None:
-    company = service.find_by_cnpj(code)
+    company = service.find_by_cnpj(cnpj)
 
     if company is None:
         raise HTTPException(
