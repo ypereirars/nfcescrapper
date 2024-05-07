@@ -75,7 +75,7 @@ async def create_company(
     company: CompanyInput,
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> CompanyOutput:
-    service.save(company)
+    entity = service.save(company)
 
     return CompanyOutput.from_entity(entity)
 
