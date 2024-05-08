@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Any
 from api.domain import Entity
 
 
@@ -13,7 +14,7 @@ class Repository(ABC):
     def find_by_id(self, id: int) -> Entity:
         pass
 
-    def find_all(self, filters: dict = {}) -> list[Entity]:
+    def find_all(self, **filters: dict[str, Any]) -> list[Entity]:
         pass
 
     def update(self, entity: Entity) -> None:

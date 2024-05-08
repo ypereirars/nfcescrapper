@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -14,7 +15,7 @@ class Service(ABC):
     def find_by_id(self, id: int) -> BaseModel:
         pass
 
-    def find_all(self) -> list[BaseModel]:
+    def find_all(self, **filters: dict[str, Any]) -> list[BaseModel]:
         pass
 
     def update(self, entity: BaseModel) -> None:

@@ -1,3 +1,4 @@
+from typing import Any
 from api.domain import Address, Company, EletronicInvoice, Item
 from api.domain.value_objects.value_objects import Taxes
 from api.ports.services import Service
@@ -23,7 +24,7 @@ class ProductService(Service):
     def find_by_id(self, id: int) -> Product:
         return self.repository.find_by_id(id)
 
-    def find_all(self) -> list[Product]:
+    def find_all(self, **filters: dict[str, Any]) -> list[Product]:
         return self.repository.find_all()
 
     def update(self, entity: Product) -> None:
@@ -51,7 +52,7 @@ class CompanyService(Service):
 
         return CompanyService.__to_basemodel(entity)
 
-    def find_all(self) -> list[CompanyOutput]:
+    def find_all(self, **filters: dict[str, Any]) -> list[CompanyOutput]:
         entities = self.repository.find_all()
 
         return [CompanyService.__to_basemodel(entity) for entity in entities]
@@ -114,7 +115,7 @@ class InvoiceService(Service):
     def find_by_id(self, id: int) -> InvoiceModel:
         return self.repository.find_by_id(id)
 
-    def find_all(self) -> list[InvoiceModel]:
+    def find_all(self, **filters: dict[str, Any]) -> list[InvoiceModel]:
         invoices = self.repository.find_all()
 
         return [InvoiceModel.from_entity(invoice) for invoice in invoices]
@@ -177,12 +178,8 @@ class ItemService(Service):
         item = self.repository.find_by_id(id)
         return ItemModel.from_entity(item)
 
-    def find_all(self, invoice_id: int = None) -> list[ItemModel]:
-        filters = {}
-        if invoice_id:
-            filters["invoice_id"] = invoice_id
-
-        items = self.repository.find_all(filters)
+    def find_all(self, **filters: dict[str, Any]) -> list[ItemModel]:
+        items = self.repository.find_all(**filters)
         return [ItemModel.from_entity(item) for item in items]
 
     def update(self, entity: ItemModel) -> None:

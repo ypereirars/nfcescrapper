@@ -1,3 +1,4 @@
+from typing import Any
 from api.database.schema import PostgresDatabase
 from api.database.schema import Item as ItemDatabase
 from api.domain.entities.entities import Item, Product
@@ -42,7 +43,7 @@ class ItemRepository(Repository):
             item = session.query(self.client.Item).filter_by(id=id).first()
             return ItemRepository.__to_entity(item)
 
-    def find_all(self, filters: dict = {}) -> list[Item]:
+    def find_all(self, **filters: dict[str, Any]) -> list[Item]:
         with self.client as session:
             items = session.query(self.client.Item).filter_by(**filters).all()
             return [ItemRepository.__to_entity(item) for item in items]

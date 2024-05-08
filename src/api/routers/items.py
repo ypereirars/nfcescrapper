@@ -122,4 +122,4 @@ async def get_by_invoice_id(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ID da nota fiscal inválido"
         )
 
-    return service.find_all(invoice_id)
+    return service.find_all(invoice_id=invoice_id)
