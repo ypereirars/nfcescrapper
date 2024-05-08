@@ -8,10 +8,10 @@ __all__ = ["Service"]
 
 class Service(ABC):
 
-    def save(self, entity: BaseModel) -> None:
+    def save(self, model: BaseModel) -> BaseModel:
         pass
 
-    def delete(self, entity: BaseModel) -> None:
+    def delete(self, id: int) -> None:
         pass
 
     def find_by_id(self, id: int) -> BaseModel:
@@ -20,5 +20,5 @@ class Service(ABC):
     def find_all(self, **filters: dict[str, Any]) -> list[BaseModel]:
         pass
 
-    def update(self, entity: BaseModel) -> None:
+    def update(self, model: BaseModel) -> None:
         pass

@@ -16,20 +16,25 @@ class ProductService(Service):
     def __init__(self, repository: ProductRepository):
         self.repository = repository
 
-    def save(self, entity: ProductModel) -> None:
-        self.repository.save(entity)
+    def save(self, model: ProductModel) -> ProductModel:
+        entity = self.repository.save(model.to_entity())
+        return ProductModel.from_entity(entity)
 
     def delete(self, id: int) -> None:
         self.repository.delete(id)
 
     def find_by_id(self, id: int) -> ProductModel:
-        return self.repository.find_by_id(id)
+        entity = self.repository.find_by_id(id)
+
+        return ProductModel.from_entity(entity)
 
     def find_all(self, **filters: dict[str, Any]) -> list[ProductModel]:
-        return self.repository.find_all()
+        entities = self.repository.find_all(**filters)
 
-    def update(self, entity: ProductModel) -> None:
-        self.repository.update(entity)
+        return [ProductModel.from_entity(entity) for entity in entities]
+
+    def update(self, model: ProductModel) -> None:
+        self.repository.update(model.to_entity())
 
     def find_by_code(self, code: str) -> ProductModel:
         return self.repository.find_by_code(code)
@@ -40,8 +45,8 @@ class CompanyService(Service):
     def __init__(self, repository: CompanyRepository):
         self.repository = repository
 
-    def save(self, entity: CompanyModel) -> CompanyModel:
-        entity = self.repository.save(entity.to_entity())
+    def save(self, model: CompanyModel) -> CompanyModel:
+        entity = self.repository.save(model.to_entity())
         return CompanyModel.from_entity(entity)
 
     def delete(self, id) -> None:
@@ -57,8 +62,8 @@ class CompanyService(Service):
 
         return [CompanyModel.from_entity(entity) for entity in entities]
 
-    def update(self, entity: CompanyModel) -> None:
-        self.repository.update(entity.to_entity())
+    def update(self, model: CompanyModel) -> None:
+        self.repository.update(model.to_entity())
 
     def find_by_cnpj(self, cnpj: str) -> CompanyModel:
         entity = self.repository.find_by_cnpj(cnpj)
@@ -71,26 +76,31 @@ class InvoiceService(Service):
     def __init__(self, repository: InvoiceRepository):
         self.repository = repository
 
-    def save(self, entity: InvoiceModel) -> None:
-        entity = InvoiceService.__from_basemodel(entity)
-        self.repository.save(entity)
+    def save(self, model: InvoiceModel) -> InvoiceModel:
+        entity = self.repository.save(model.to_entity())
+
+        return InvoiceModel.from_entity(entity)
 
     def delete(self, id: int) -> None:
         self.repository.delete(id)
 
     def find_by_id(self, id: int) -> InvoiceModel:
-        return self.repository.find_by_id(id)
+        entity = self.repository.find_by_id(id)
+
+        return InvoiceModel.from_entity(entity)
 
     def find_all(self, **filters: dict[str, Any]) -> list[InvoiceModel]:
-        invoices = self.repository.find_all(**filters)
+        entities = self.repository.find_all(**filters)
 
-        return [InvoiceModel.from_entity(invoice) for invoice in invoices]
+        return [InvoiceModel.from_entity(entity) for entity in entities]
 
     def update(self, entity: InvoiceModel) -> None:
         self.repository.update(entity.to_entity())
 
     def find_by_access_key(self, access_key: str) -> InvoiceModel:
-        return self.repository.find_by_access_key(access_key)
+        entity = self.repository.find_by_access_key(access_key)
+
+        return InvoiceModel.from_entity(entity)
 
 
 class ItemService(Service):
@@ -98,19 +108,22 @@ class ItemService(Service):
     def __init__(self, repository: ItemRepository):
         self.repository = repository
 
-    def save(self, entity: ItemModel) -> ItemModel:
-        self.repository.save(entity.to_entity())
+    def save(self, model: ItemModel) -> ItemModel:
+        entity = self.repository.save(model.to_entity())
+
+        return ItemModel.from_entity(entity)
 
     def delete(self, id: int) -> None:
         self.repository.delete(id)
 
     def find_by_id(self, id: int) -> ItemModel:
         item = self.repository.find_by_id(id)
+
         return ItemModel.from_entity(item)
 
     def find_all(self, **filters: dict[str, Any]) -> list[ItemModel]:
-        items = self.repository.find_all(**filters)
-        return [ItemModel.from_entity(item) for item in items]
+        entities = self.repository.find_all(**filters)
+        return [ItemModel.from_entity(item) for item in entities]
 
-    def update(self, entity: ItemModel) -> None:
-        self.repository.update(entity)
+    def update(self, model: ItemModel) -> None:
+        self.repository.update(model.to_entity())
