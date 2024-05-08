@@ -118,6 +118,7 @@ async def get_product_by_code(
     code: str,
     repository: Annotated[ProductService, Depends(get_products_services)],
 ) -> None:
+    # TODO: Change to filter implementation
     product = repository.find_by_code(code)
 
     if product is None:

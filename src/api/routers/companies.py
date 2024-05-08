@@ -112,6 +112,7 @@ async def get_company_by_cnpj(
     cnpj: str,
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> None:
+    # TODO: Change to filter implementation
     company = service.find_by_cnpj(cnpj)
 
     if company is None:

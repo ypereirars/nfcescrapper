@@ -37,6 +37,7 @@ class ProductService(Service):
         self.repository.update(model.to_entity())
 
     def find_by_code(self, code: str) -> ProductModel:
+        # TODO: Change to filter implementation
         return self.repository.find_by_code(code)
 
 
@@ -58,7 +59,7 @@ class CompanyService(Service):
         return CompanyModel.from_entity(entity)
 
     def find_all(self, **filters: dict[str, Any]) -> list[CompanyModel]:
-        entities = self.repository.find_all()
+        entities = self.repository.find_all(**filters)
 
         return [CompanyModel.from_entity(entity) for entity in entities]
 
@@ -66,6 +67,7 @@ class CompanyService(Service):
         self.repository.update(model.to_entity())
 
     def find_by_cnpj(self, cnpj: str) -> CompanyModel:
+        # TODO: Change to filter implementation
         entity = self.repository.find_by_cnpj(cnpj)
 
         return CompanyModel.from_entity(entity)
@@ -97,11 +99,6 @@ class InvoiceService(Service):
     def update(self, entity: InvoiceModel) -> None:
         self.repository.update(entity.to_entity())
 
-    def find_by_access_key(self, access_key: str) -> InvoiceModel:
-        entity = self.repository.find_by_access_key(access_key)
-
-        return InvoiceModel.from_entity(entity)
-
 
 class ItemService(Service):
 
@@ -123,6 +120,7 @@ class ItemService(Service):
 
     def find_all(self, **filters: dict[str, Any]) -> list[ItemModel]:
         entities = self.repository.find_all(**filters)
+
         return [ItemModel.from_entity(item) for item in entities]
 
     def update(self, model: ItemModel) -> None:
