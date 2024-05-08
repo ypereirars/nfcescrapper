@@ -76,8 +76,8 @@ class Item(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     product_id = Column(Integer, ForeignKey("produtos.id"), name="id_produto")
     invoice_id = Column(Integer, ForeignKey("notas_fiscais.id"), name="id_nota_fiscal")
-    quantity = Column(Integer, name="quantidade")
-    unit_price = Column(Integer, name="preco_unitario")
+    quantity = Column(Float, name="quantidade")
+    unit_price = Column(Float, name="preco_unitario")
     unity_of_measurement = Column(Text, name="unidade_medida")
     # created_on = Column(
     #     DateTime, name="data_criacao", default=datetime.now(datetime.UTC)

@@ -1,12 +1,12 @@
-from api.domain import Address, Company
-from api.domain.entities.entities import EletronicInvoice
+from api.domain import Address, Company, EletronicInvoice, Item
 from api.domain.value_objects.value_objects import Taxes
 from api.ports.services import Service
 from api.domain import Product
 from api.repositories.company import CompanyRepository
 from api.repositories.invoice import InvoiceRepository
+from api.repositories.item import ItemRepository
 from api.repositories.product import ProductRepository
-from api.routers.schema import CompanyInput, CompanyOutput, InvoiceModel
+from api.routers.schema import CompanyInput, CompanyOutput, InvoiceModel, ItemModel
 
 
 class ProductService(Service):
@@ -159,4 +159,44 @@ class InvoiceService(Service):
             authorization_protocol=entity.authorization_protocol,
             authorization_date=entity.authorization_date,
             taxes=taxes,
+        )
+
+
+class ItemService(Service):
+
+    def __init__(self, repository: ItemRepository):
+        self.repository = repository
+
+    def save(self, entity: ItemModel) -> ItemModel:
+        self.repository.save(ItemService.__from_basemodel(entity))
+
+    def delete(self, id: int) -> None:
+        self.repository.delete(id)
+
+    def find_by_id(self, id: int) -> ItemModel:
+        item = self.repository.find_by_id(id)
+        return ItemModel.from_entity(item)
+
+    def find_all(self) -> list[ItemModel]:
+        items = self.repository.find_all()
+        return [ItemModel.from_entity(item) for item in items]
+
+    def update(self, entity: ItemModel) -> None:
+        self.repository.update(entity)
+
+    @staticmethod
+    def __from_basemodel(entity: ItemModel) -> Item:
+        product = Product(
+            id=entity.product_id,
+            code=entity.product.code,
+            description=entity.product.description,
+        )
+        return Item(
+            id=entity.id,
+            invoice_id=entity.invoice_id,
+            product_id=entity.product_id,
+            quantity=entity.quantity,
+            unit_price=entity.unit_price,
+            unity_of_measurement=entity.unity_of_measurement,
+            product=product,
         )

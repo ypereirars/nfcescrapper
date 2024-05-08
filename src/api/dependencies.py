@@ -4,9 +4,15 @@ from fastapi import Depends
 import os
 
 from api.repositories.company import CompanyRepository
+from api.repositories.item import ItemRepository
 from .database.schema import PostgresDatabase
 from .repositories.product import ProductRepository
-from .services.services import CompanyService, ProductService, InvoiceService
+from .services.services import (
+    CompanyService,
+    ItemService,
+    ProductService,
+    InvoiceService,
+)
 from .repositories.invoice import InvoiceRepository
 from .ports.services import Service
 
@@ -28,6 +34,9 @@ def get_postgres_client() -> PostgresDatabase:
     raise ValueError("Missing environment variables for Postgres connection")
 
 
+# Repositories
+
+
 def get_products_repository(
     postgres_client: PostgresDatabase = Depends(get_postgres_client),
 ) -> PostgresDatabase:
@@ -46,6 +55,15 @@ def get_invoices_repository(
     return InvoiceRepository(postgres_client)
 
 
+def get_items_repository(
+    postgres_client: PostgresDatabase = Depends(get_postgres_client),
+) -> PostgresDatabase:
+    return ItemRepository(postgres_client)
+
+
+# Services
+
+
 def get_products_services(
     repository: Annotated[ProductRepository, Depends(get_products_repository)],
 ) -> Service:
@@ -62,3 +80,9 @@ def get_invoices_services(
     repository: Annotated[InvoiceRepository, Depends(get_invoices_repository)],
 ) -> Service:
     return InvoiceService(repository)
+
+
+def get_items_services(
+    repository: Annotated[ItemRepository, Depends(get_items_repository)],
+) -> Service:
+    return ItemService(repository)

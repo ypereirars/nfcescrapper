@@ -42,6 +42,7 @@ class Product(Entity):
 @dataclass
 class Item(Entity):
     invoice_id: int
+    product_id: int
     product: Product
     quantity: int = 1
     unit_price: float = 0.0
