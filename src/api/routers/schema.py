@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from api.domain import Product, Company, Address, EletronicInvoice, Item
+from api.domain.value_objects.value_objects import Taxes
 
 __all__ = ["ProductModel", "CompanyModel", "ItemModel", "InvoiceModel"]
 
@@ -77,12 +78,18 @@ class ItemModel(BaseModel):
     unity_of_measurement: str
 
     def to_entity(self) -> Item:
+        product = Product(
+            id=self.product_id,
+            code=self.product_code,
+            description=self.product_description,
+        )
         return Item(
             product_id=self.product_id,
             invoice_id=self.invoice_id,
             quantity=self.quantity,
             unit_price=self.unit_price,
             unity_of_measurement=self.unity_of_measurement,
+            product=product,
         )
 
     @classmethod
@@ -112,10 +119,30 @@ class InvoiceModel(BaseModel):
     municipal_tax: float
     source: str
     company_id: int
-    company: CompanyOutput
+    company: CompanyModel
     items: list[ItemModel]
 
     def to_entity(self) -> Item:
+        company = Company(
+            id=self.company_id,
+            cnpj=self.cnpj,
+            name=self.company.name,
+            address=Address(
+                street=self.company.street,
+                number=self.company.number,
+                neighborhood=self.company.neighborhood,
+                city=self.company.city,
+                state=self.company.state,
+                complement=self.company.complement,
+                zip_code=self.company.zip_code,
+            ),
+        )
+        taxes = Taxes(
+            federal=self.federal_tax,
+            state=self.state_tax,
+            municipal=self.municipal_tax,
+            source=self.source,
+        )
         return EletronicInvoice(
             company_id=self.company_id,
             access_key=self.access_key,
@@ -128,11 +155,13 @@ class InvoiceModel(BaseModel):
             state_tax=self.state_tax,
             municipal_tax=self.municipal_tax,
             source=self.source,
+            company=company,
+            taxes=taxes,
         )
 
     @classmethod
     def from_entity(cls, invoice: EletronicInvoice) -> "InvoiceModel":
-        company = CompanyOutput.from_entity(invoice.company)
+        company = CompanyModel.from_entity(invoice.company)
 
         return cls(
             id=invoice.id,
