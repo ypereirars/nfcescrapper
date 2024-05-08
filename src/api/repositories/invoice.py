@@ -1,9 +1,7 @@
 from typing import Any
-from api.database.schema import PostgresDatabase
-from api.domain.entities.entities import Company, EletronicInvoice
-from api.domain.value_objects.value_objects import Address, Taxes
+from api.database import PostgresDatabase
+from api.domain import EletronicInvoice, Company, Taxes, Address
 from api.ports.repositories import Repository
-from api.database.schema import Invoice
 
 
 class InvoiceRepository(Repository):
@@ -80,7 +78,7 @@ class InvoiceRepository(Repository):
                 raise e
 
     @staticmethod
-    def __to_entity(invoice: Invoice) -> EletronicInvoice:
+    def __to_entity(invoice: Any) -> EletronicInvoice:
         taxes = Taxes(
             federal=invoice.federal_tax,
             state=invoice.state_tax,

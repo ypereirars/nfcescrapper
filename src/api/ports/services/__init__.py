@@ -3,6 +3,8 @@ from typing import Any
 
 from pydantic import BaseModel
 
+__all__ = ["Service"]
+
 
 class Service(ABC):
 

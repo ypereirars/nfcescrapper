@@ -2,6 +2,8 @@ from abc import ABC
 from typing import Any
 from api.domain import Entity
 
+__all__ = ["Repository"]
+
 
 class Repository(ABC):
 

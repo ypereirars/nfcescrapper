@@ -1,8 +1,7 @@
 from typing import Any
-from api.database.schema import PostgresDatabase
+from api.database import PostgresDatabase
 from api.ports.repositories import Repository
-from api.domain import Company
-from api.domain.value_objects import Address
+from api.domain import Company, Address
 
 
 class CompanyRepository(Repository):

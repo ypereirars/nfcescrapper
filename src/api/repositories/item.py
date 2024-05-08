@@ -1,7 +1,6 @@
 from typing import Any
-from api.database.schema import PostgresDatabase
-from api.database.schema import Item as ItemDatabase
-from api.domain.entities.entities import Item, Product
+from api.database import PostgresDatabase
+from api.domain import Item, Product
 from api.ports.repositories import Repository
 
 
@@ -64,7 +63,7 @@ class ItemRepository(Repository):
                 raise e
 
     @staticmethod
-    def __to_entity(item: ItemDatabase):
+    def __to_entity(item: Any) -> Item:
         product = Product(item.product_id, item.product.code, item.product.description)
         return Item(
             id=item.id,

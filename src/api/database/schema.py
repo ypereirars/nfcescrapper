@@ -9,6 +9,8 @@ from sqlalchemy.orm import Session
 
 Base = declarative_base()
 
+__all__ = ["PostgresDatabase", "Base"]
+
 
 # class User(Base):
 #     __tablename__ = "usuarios"

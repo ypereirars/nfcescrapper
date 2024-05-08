@@ -21,6 +21,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+__all__ = [
+    "get_postgres_client",
+    "get_products_repository",
+    "get_companies_repository",
+    "get_invoices_repository",
+    "get_items_repository",
+    "get_products_services",
+    "get_companies_services",
+    "get_invoices_services",
+    "get_items_services",
+]
+
+
 @lru_cache
 def get_postgres_client() -> PostgresDatabase:
     database = os.getenv("POSTGRES_DB")

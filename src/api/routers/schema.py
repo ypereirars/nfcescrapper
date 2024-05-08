@@ -2,8 +2,11 @@ from pydantic import BaseModel
 from datetime import datetime
 from api.domain import Product, Company, Address, EletronicInvoice, Item
 
+__all__ = ["ProductModel", "CompanyModel", "ItemModel", "InvoiceModel"]
 
-class ProductInput(BaseModel):
+
+class ProductModel(BaseModel):
+    id: int
     code: str
     description: str
 
@@ -14,14 +17,8 @@ class ProductInput(BaseModel):
             description=self.description,
         )
 
-
-class ProductOutput(BaseModel):
-    id: int
-    code: str
-    description: str
-
     @classmethod
-    def from_entity(cls, product: Product) -> "ProductOutput":
+    def from_entity(cls, product: Product) -> "ProductModel":
         return cls(
             id=product.id,
             code=product.code,
@@ -29,7 +26,8 @@ class ProductOutput(BaseModel):
         )
 
 
-class CompanyInput(BaseModel):
+class CompanyModel(BaseModel):
+    id: int
     name: str
     cnpj: str
     street: str
@@ -52,21 +50,8 @@ class CompanyInput(BaseModel):
         )
         return Company(id=id, name=self.name, cnpj=self.cnpj, address=address)
 
-
-class CompanyOutput(BaseModel):
-    id: int
-    name: str
-    cnpj: str
-    street: str
-    number: str
-    complement: str
-    neighborhood: str
-    city: str
-    state: str
-    zip_code: str
-
     @classmethod
-    def from_entity(cls, company: Company) -> "CompanyOutput":
+    def from_entity(cls, company: Company) -> "CompanyModel":
         return cls(
             id=company.id,
             name=company.name,

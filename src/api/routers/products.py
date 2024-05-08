@@ -3,9 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status, HTTPException
 
 from api.dependencies import get_products_services
-from api.services.services import ProductService
-from .schema import ProductInput, ProductOutput
+from api.services import ProductService
+from .schema import ProductModel
 from api.domain import Product
+
+__all__ = ["router"]
 
 router = APIRouter(prefix="/products")
 
@@ -13,7 +15,7 @@ router = APIRouter(prefix="/products")
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_all_products(
     repository: Annotated[ProductService, Depends(get_products_services)]
-) -> list[ProductOutput]:
+) -> list[ProductModel]:
 
     return repository.find_all()
 
@@ -49,7 +51,7 @@ async def get_product(
 @router.patch("/{product_id}", status_code=status.HTTP_200_OK)
 async def update_product(
     product_id: int,
-    product: ProductInput,
+    product: ProductModel,
     repository: Annotated[ProductService, Depends(get_products_services)],
 ) -> None:
     try:
@@ -74,15 +76,15 @@ async def update_product(
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_product(
-    product: ProductInput,
+    product: ProductModel,
     repository: Annotated[ProductService, Depends(get_products_services)],
-) -> ProductOutput:
+) -> ProductModel:
 
     entity = product.to_entity(0)
 
     repository.save(entity)
 
-    return ProductOutput.from_entity(entity)
+    return ProductModel.from_entity(entity)
 
 
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)

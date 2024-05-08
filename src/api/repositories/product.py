@@ -1,5 +1,5 @@
 from typing import Any
-from api.database.schema import PostgresDatabase
+from api.database import PostgresDatabase
 from api.ports.repositories import Repository
 from api.domain import Product
 

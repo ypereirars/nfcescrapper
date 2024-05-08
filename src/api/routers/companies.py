@@ -3,9 +3,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status, HTTPException
 
 from api.dependencies import get_companies_services
-from api.services.services import CompanyService
-from .schema import CompanyInput, CompanyOutput
-from api.domain import Company
+from api.services import CompanyService
+from .schema import CompanyModel
+
+__all__ = ["router"]
 
 router = APIRouter(prefix="/companies")
 
@@ -13,7 +14,7 @@ router = APIRouter(prefix="/companies")
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_all_companies(
     service: Annotated[CompanyService, Depends(get_companies_services)]
-) -> list[CompanyOutput]:
+) -> list[CompanyModel]:
 
     return service.find_all()
 
@@ -49,7 +50,7 @@ async def get_company(
 @router.patch("/{company_id}", status_code=status.HTTP_200_OK)
 async def update_company(
     company_id: int,
-    company: CompanyInput,
+    company: CompanyModel,
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> None:
     try:
@@ -72,12 +73,12 @@ async def update_company(
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_company(
-    company: CompanyInput,
+    company: CompanyModel,
     service: Annotated[CompanyService, Depends(get_companies_services)],
-) -> CompanyOutput:
+) -> CompanyModel:
     entity = service.save(company)
 
-    return CompanyOutput.from_entity(entity)
+    return CompanyModel.from_entity(entity)
 
 
 @router.delete("/{company_id}", status_code=status.HTTP_204_NO_CONTENT)

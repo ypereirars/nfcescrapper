@@ -3,8 +3,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status, HTTPException
 
 from api.dependencies import get_items_services
-from api.services.services import ItemService
+from api.services import ItemService
 from .schema import ItemModel
+
+__all__ = ["router"]
 
 router = APIRouter(prefix="/items")
 
