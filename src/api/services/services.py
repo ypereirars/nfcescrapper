@@ -116,7 +116,7 @@ class InvoiceService(Service):
         return self.repository.find_by_id(id)
 
     def find_all(self, **filters: dict[str, Any]) -> list[InvoiceModel]:
-        invoices = self.repository.find_all()
+        invoices = self.repository.find_all(**filters)
 
         return [InvoiceModel.from_entity(invoice) for invoice in invoices]
 

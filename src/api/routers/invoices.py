@@ -104,3 +104,24 @@ async def delete_invoice(
         )
 
     service.delete(invoice_id)
+
+
+@router.get("/company/{company_id}", status_code=status.HTTP_200_OK)
+async def get_all_invoices_by_company(
+    company_id: int, service: Annotated[InvoiceService, Depends(get_invoices_services)]
+) -> list[InvoiceModel]:
+
+    try:
+        company_id = int(company_id)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="ID da nota fiscal é obrigatório",
+        )
+
+    if company_id <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="ID da nota fiscal inválido"
+        )
+
+    return service.find_all(company_id=company_id)

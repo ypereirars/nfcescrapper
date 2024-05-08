@@ -51,9 +51,9 @@ class InvoiceRepository(Repository):
             invoice = session.query(self.client.Invoice).filter_by(id=id).first()
             return InvoiceRepository.__to_entity(invoice)
 
-    def find_all(self) -> list[EletronicInvoice]:
+    def find_all(self, **filters: dict[str, Any]) -> list[EletronicInvoice]:
         with self.client as session:
-            invoices = session.query(self.client.Invoice).all()
+            invoices = session.query(self.client.Invoice).filter_by(**filters).all()
             return [InvoiceRepository.__to_entity(invoice) for invoice in invoices]
 
     def update(self, entity: EletronicInvoice) -> None:
