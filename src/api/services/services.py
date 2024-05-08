@@ -177,8 +177,12 @@ class ItemService(Service):
         item = self.repository.find_by_id(id)
         return ItemModel.from_entity(item)
 
-    def find_all(self) -> list[ItemModel]:
-        items = self.repository.find_all()
+    def find_all(self, invoice_id: int = None) -> list[ItemModel]:
+        filters = {}
+        if invoice_id:
+            filters["invoice_id"] = invoice_id
+
+        items = self.repository.find_all(filters)
         return [ItemModel.from_entity(item) for item in items]
 
     def update(self, entity: ItemModel) -> None:

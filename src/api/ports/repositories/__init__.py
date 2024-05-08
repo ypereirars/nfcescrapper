@@ -13,7 +13,7 @@ class Repository(ABC):
     def find_by_id(self, id: int) -> Entity:
         pass
 
-    def find_all(self) -> list[Entity]:
+    def find_all(self, filters: dict = {}) -> list[Entity]:
         pass
 
     def update(self, entity: Entity) -> None:

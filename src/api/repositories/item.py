@@ -42,9 +42,9 @@ class ItemRepository(Repository):
             item = session.query(self.client.Item).filter_by(id=id).first()
             return ItemRepository.__to_entity(item)
 
-    def find_all(self) -> list[Item]:
+    def find_all(self, filters: dict = {}) -> list[Item]:
         with self.client as session:
-            items = session.query(self.client.Item).all()
+            items = session.query(self.client.Item).filter_by(**filters).all()
             return [ItemRepository.__to_entity(item) for item in items]
 
     def update(self, entity: Item) -> None:
