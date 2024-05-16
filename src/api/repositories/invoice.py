@@ -47,7 +47,7 @@ class InvoiceRepository(Repository):
     def find_by_id(self, id: int) -> EletronicInvoice:
         with self.client as session:
             invoice = session.query(self.client.Invoice).filter_by(id=id).first()
-            return InvoiceRepository.__to_entity(invoice)
+            return InvoiceRepository.__to_entity(invoice) if invoice else None
 
     def find_all(self, **filters: dict[str, Any]) -> list[EletronicInvoice]:
         with self.client as session:

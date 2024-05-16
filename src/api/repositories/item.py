@@ -40,7 +40,7 @@ class ItemRepository(Repository):
     def find_by_id(self, id: int) -> Item:
         with self.client as session:
             item = session.query(self.client.Item).filter_by(id=id).first()
-            return ItemRepository.__to_entity(item)
+            return ItemRepository.__to_entity(item) if item else None
 
     def find_all(self, **filters: dict[str, Any]) -> list[Item]:
         with self.client as session:

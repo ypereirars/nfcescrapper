@@ -26,7 +26,7 @@ class ProductService(Service):
     def find_by_id(self, id: int) -> ProductModel:
         entity = self.repository.find_by_id(id)
 
-        return ProductModel.from_entity(entity)
+        return ProductModel.from_entity(entity) if entity else None
 
     def find_all(self, **filters: dict[str, Any]) -> list[ProductModel]:
         entities = self.repository.find_all(**filters)
@@ -52,7 +52,7 @@ class CompanyService(Service):
     def find_by_id(self, id: int) -> CompanyModel:
         entity = self.repository.find_by_id(id)
 
-        return CompanyModel.from_entity(entity)
+        return CompanyModel.from_entity(entity) if entity else None
 
     def find_all(self, **filters: dict[str, Any]) -> list[CompanyModel]:
         entities = self.repository.find_all(**filters)
@@ -79,7 +79,7 @@ class InvoiceService(Service):
     def find_by_id(self, id: int) -> InvoiceModel:
         entity = self.repository.find_by_id(id)
 
-        return InvoiceModel.from_entity(entity)
+        return InvoiceModel.from_entity(entity) if entity else None
 
     def find_all(self, **filters: dict[str, Any]) -> list[InvoiceModel]:
         entities = self.repository.find_all(**filters)
@@ -104,9 +104,9 @@ class ItemService(Service):
         self.repository.delete(id)
 
     def find_by_id(self, id: int) -> ItemModel:
-        item = self.repository.find_by_id(id)
+        entity = self.repository.find_by_id(id)
 
-        return ItemModel.from_entity(item)
+        return ItemModel.from_entity(entity) if entity else None
 
     def find_all(self, **filters: dict[str, Any]) -> list[ItemModel]:
         entities = self.repository.find_all(**filters)
