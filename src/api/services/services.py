@@ -36,10 +36,6 @@ class ProductService(Service):
     def update(self, model: ProductModel) -> None:
         self.repository.update(model.to_entity())
 
-    def find_by_code(self, code: str) -> ProductModel:
-        # TODO: Change to filter implementation
-        return self.repository.find_by_code(code)
-
 
 class CompanyService(Service):
 
@@ -65,12 +61,6 @@ class CompanyService(Service):
 
     def update(self, model: CompanyModel) -> None:
         self.repository.update(model.to_entity())
-
-    def find_by_cnpj(self, cnpj: str) -> CompanyModel:
-        # TODO: Change to filter implementation
-        entity = self.repository.find_by_cnpj(cnpj)
-
-        return CompanyModel.from_entity(entity)
 
 
 class InvoiceService(Service):

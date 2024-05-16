@@ -16,7 +16,6 @@ router = APIRouter(prefix="/products")
 async def get_all_products(
     repository: Annotated[ProductService, Depends(get_products_services)]
 ) -> list[ProductModel]:
-
     return repository.find_all()
 
 
@@ -118,8 +117,14 @@ async def get_product_by_code(
     code: str,
     repository: Annotated[ProductService, Depends(get_products_services)],
 ) -> None:
-    # TODO: Change to filter implementation
-    product = repository.find_by_code(code)
+
+    if code == "":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Código do produto é obrigatório",
+        )
+
+    product = repository.find_all(code=code)
 
     if product is None:
         raise HTTPException(

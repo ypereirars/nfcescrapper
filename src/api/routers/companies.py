@@ -112,8 +112,14 @@ async def get_company_by_cnpj(
     cnpj: str,
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> None:
-    # TODO: Change to filter implementation
-    company = service.find_by_cnpj(cnpj)
+
+    if cnpj == "":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="CNPJ da empresa é obrigatório",
+        )
+
+    company = service.find_all(cnpj=cnpj)
 
     if company is None:
         raise HTTPException(

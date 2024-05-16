@@ -36,9 +36,9 @@ class ProductRepository(Repository):
             product = session.query(self.client.Product).get(id)
             return ProductRepository.__to_entity(product) if product else None
 
-    def find_all(self) -> list[Product]:
+    def find_all(self, **filters) -> list[Product]:
         with self.client as session:
-            products = session.query(self.client.Product).all()
+            products = session.query(self.client.Product).filter_by(**filters).all()
             return (
                 [ProductRepository.__to_entity(product) for product in products]
                 if products
@@ -55,11 +55,6 @@ class ProductRepository(Repository):
             except Exception as e:
                 session.rollback()
                 raise e
-
-    def find_by_code(self, code: str) -> Product:
-        with self.client as session:
-            product = session.query(self.client.Product).filter_by(code=code).first()
-            return ProductRepository.__to_entity(product) if product else None
 
     @staticmethod
     def __to_entity(product: Any):

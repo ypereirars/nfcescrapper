@@ -46,9 +46,9 @@ class CompanyRepository(Repository):
             company = session.query(self.client.Company).get(id)
             return CompanyRepository.__to_entity(company) if company else None
 
-    def find_all(self) -> list[Company]:
+    def find_all(self, **filters) -> list[Company]:
         with self.client as session:
-            companies = session.query(self.client.Company).all()
+            companies = session.query(self.client.Company).filter_by(**filters).all()
 
             return (
                 [CompanyRepository.__to_entity(company) for company in companies]
