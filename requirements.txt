@@ -5,3 +5,4 @@ selenium==4.19.0
 telebot==0.0.5
 uvicorn==0.29.0
 webdriver-manager==4.0.1
+SQLAlchemy==2.0.29
