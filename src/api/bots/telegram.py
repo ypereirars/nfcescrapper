@@ -4,8 +4,7 @@ from telebot import TeleBot, logger
 import logging
 from dotenv import load_dotenv
 
-from .services import scrape_invoice
-from .database import save
+from api.scrapers.scrapers import NfceScraper
 
 load_dotenv()
 
@@ -83,7 +82,7 @@ def nfce_command(message, user=None):
         value = commands[2]
 
         if option.lower() == "url":
-            fetch_nfce_by_url(message.chat.id, value)
+            get_and_save_invoice(message.chat.id, value)
             return
         elif option.lower() == "chave":
             fetch_nfce_by_key(message.chat.id, value)
@@ -100,40 +99,68 @@ def nfce_command(message, user=None):
     return
 
 
-def fetch_nfce_by_url(chat_id, url):
-
+def get_invoice_by_url(url):
     try:
-        invoice = scrape_invoice(url)
-        logger.info("Scraped invoice %s", invoice.informacoes.chave_acesso)
+        invoice = NfceScraper().get(url)
+        logger.info("Scraped invoice %s", invoice)
+        return invoice
     except Exception as e:
-        text = f"Deu erro ao obter os dados da NFC-e."
-        bot.send_message(chat_id, text)
         logger.error("Failed to scrape", e)
-        return
+        return {}
 
+
+def save_invoice(invoice):
     try:
-        invoice_id = save(invoice)
+        # invoice_id = save(invoice)
+        return 0
     except Exception as e:
-        saved = False
         logger.error(
             "Failed to save invoice %s: %s",
             invoice.informacoes.chave_acesso,
             str(e),
             exc_info=True,
         )
+        return 0
 
-    if invoice_id > 0:
-        msg = "*NFC-e salva com sucesso!*"
-    else:
-        msg = "Consegui obter os dados da nota, mas não consegui salvá-la no banco de dados."
+
+def get_and_save_invoice(chat_id, url):
+
+    try:
+        invoice = get_invoice_by_url(url)
+        access_key = invoice["informacoes"]["chave_acesso"]
+
+        bot.send_message(
+            chat_id,
+            f"Ok, consegui buscar os dados da NFC-e **{access_key}**.",
+            parse_mode="Markdown",
+        )
+
+        logger.info("Scraped invoice %s", invoice)
+    except Exception as e:
+        bot.send_message(chat_id, "Deu erro ao obter os dados da NFC-e.")
+        logger.error("Failed to scrape", e)
+        return
+
+    try:
+        invoice_id = save_invoice(invoice)
+
+        if invoice_id > 0:
+            bot.send_message(chat_id, "Salvei os dados da nota.")
+        else:
+            bot.send_message(
+                chat_id, "Infelizmente não consegui salvá-la no banco de dados."
+            )
+    except Exception:
+        bot.send_message(chat_id, "Deu erro ao salvar os dados da NFC-e.")
+        logger.error("Invoice not found", exc_info=True)
 
     nfce_data = (
-        f"*Chave de Acesso:* {invoice.informacoes.chave_acesso}\n"
-        + f"*Valor:* R${invoice.totais.valor_total:.2f}\n"
-        + f"*Emissão:* {invoice.informacoes.data_emissao}"
+        f"*Chave de Acesso:* {access_key}\n"
+        + f"*Valor Pago:* R${invoice['totais']['valor_a_pagar']:.2f}\n"
+        + f"*Qtd. Itens:* {invoice['totais']['quantidade_itens']}"
     )
 
-    text = f"{msg}\n\nInformações da nota:\n\n{nfce_data}"
+    text = f"*INFORMAÇÕES DA NOTA:*\n\n{nfce_data}"
     bot.send_message(chat_id, text, parse_mode="Markdown")
 
 
