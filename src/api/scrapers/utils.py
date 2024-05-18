@@ -49,7 +49,7 @@ def to_float(number: str, radix: str = ",", default: float = 0.0) -> float:
     Returns:
         float: converted string
     """
-    number = sanitize_text(number)
+    number = sanitize_text(str(number))
     if number == "":
         return default
 

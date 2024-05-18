@@ -2,6 +2,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 
 from api.scrapers.browsers import get_browser
+from api.scrapers.parsers import NfceParser
 from .interfaces import Parser, Scraper
 from selenium.common.exceptions import TimeoutException as WebDriverTimeoutException
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -21,7 +22,7 @@ class NfceScraper(Scraper):
     def __init__(
         self,
         browser: WebDriver = None,
-        parser: Parser = None,
+        parser: Parser = NfceParser(),
         id_to_wait: str = "tabResult",
         timeout: int = 5,
     ):
@@ -30,7 +31,7 @@ class NfceScraper(Scraper):
 
         Args:
             browser (WebDriver): The web driver object used to interact with the browser. Defaults to None.
-            parser (Parser, optional): The content parser object used to parse the scraped data. Defaults to None.
+            parser (Parser, optional): The content parser object used to parse the scraped data. Defaults to NfceParser.
             id_to_wait (str, optional): The ID of the element to wait for before scraping. Defaults to "tabResult".
             timeout (int, optional): The maximum time, in seconds, to wait for the element to appear. Defaults to 5.
         """
