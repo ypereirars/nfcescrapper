@@ -15,7 +15,7 @@ def sanitize_text(text: str) -> str:
     """
 
     try:
-        words_to_remove = "|".join(UNWANTED_WORDS)
+        words_to_remove = re.compile("|".join(UNWANTED_WORDS))
         text = words_to_remove.sub("", text)
         return text.strip()
     except Exception:
@@ -32,7 +32,7 @@ def clean_text(text: str) -> str:
         str: cleared text
     """
     try:
-        text = re.sub(r"[\s.\-/]", "", text)
+        text = re.sub(r"[\s.\-/]", "", sanitize_text(text))
         return text.strip()
     except Exception:
         return ""
@@ -58,3 +58,18 @@ def to_float(number: str, radix: str = ",", default: float = 0.0) -> float:
         return float(number.replace(radix, "."))
     except Exception:
         return default
+
+
+def remove_consecutive_spaces(text: str | list[str]) -> str:
+    """Remove consecutive spaces from a string
+
+    Args:
+        text (str): text to be cleaned
+
+    Returns:
+        str: cleaned text
+    """
+    text = " ".join(text) if isinstance(text, list) else text
+
+    return re.sub(r"[\s\t\n ]+"," ", text).strip()
+
