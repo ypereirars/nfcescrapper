@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+__all__ = ["Parser", "ContentParser", "InfoParser", "Scraper"]
+
 
 class Parser(ABC):
     CONTENT_SELECTOR = ""
@@ -8,6 +10,20 @@ class Parser(ABC):
     @abstractmethod
     def parse(self, page) -> dict[str, Any]:
         pass
+
+    def _get_content(self, page: Any) -> Any:
+        if not self.CONTENT_SELECTOR:
+            raise ValueError("CONTENT_SELECTOR must be defined")
+
+        return page.find("div", id=self.CONTENT_SELECTOR)
+
+
+class ContentParser(Parser):
+    CONTENT_SELECTOR = "conteudo"
+
+
+class InfoParser(Parser):
+    CONTENT_SELECTOR = "infos"
 
 
 class Scraper(ABC):
