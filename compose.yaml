@@ -42,14 +42,14 @@ services:
     expose:
       - 80
     volumes:
-      - ./:/app
+      - ./src:/app
     ports:
       - 5002:80
     depends_on:
       - db
     links:
       - db
-    command: ["python", "-m", "nfce.telegram_bot"]
+    command: ["python", "-m", "api.bots.telegram"]
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       POSTGRES_HOST: db
