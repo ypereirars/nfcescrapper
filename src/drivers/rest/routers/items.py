@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from dependencies import get_items_services
+from drivers.rest.dependencies import get_items_services
 from services import ItemService
 from .schema import ItemModel
 

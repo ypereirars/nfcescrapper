@@ -6,7 +6,12 @@ from repositories import (
     ItemRepository,
     ProductRepository,
 )
-from routers.schema import CompanyModel, InvoiceModel, ItemModel, ProductModel
+from drivers.rest.routers.schema import (
+    CompanyModel,
+    InvoiceModel,
+    ItemModel,
+    ProductModel,
+)
 
 __all__ = ["ProductService", "CompanyService", "InvoiceService", "ItemService"]
 

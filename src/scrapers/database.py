@@ -26,7 +26,7 @@ def _dict_to_entity(data: dict[str, Any]) -> EletronicInvoice:
             product_id=0,
             product=Product(
                 id=0,
-                code=item["codigo_produto"],
+                code=f"{int(item['codigo_produto']):0>15}",
                 description=item["descricao_produto"],
             ),
             quantity=item["quantidade"],
@@ -81,18 +81,18 @@ def save_invoice(
 
     invoices = invoice_repository.find_all(access_key=entity.access_key)
 
+    companies = company_repository.find_all(cnpj=entity.company.cnpj)
+
+    if len(companies) == 1:
+        entity.company = companies[0].id
+    else:
+        entity.company = company_repository.save(entity.company)
+
     if len(invoices) == 1:
         entity.id = invoices[0].id
     else:
         _entity = invoice_repository.save(entity)
         entity.id = _entity.id
-
-    companies = company_repository.find_all(cnpj=entity.company.cnpj)
-
-    if len(companies) == 1:
-        entity.company.id = companies[0].id
-    else:
-        entity.company = company_repository.save(entity.company)
 
     for item in entity.items:
         item.invoice_id = entity.id

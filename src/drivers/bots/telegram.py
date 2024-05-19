@@ -1,3 +1,4 @@
+# TODO: Refactor to use the REST API instead of the database directly
 from dataclasses import dataclass
 import os
 from telebot import TeleBot, logger
@@ -11,6 +12,7 @@ from repositories import (
     ItemRepository,
     ProductRepository,
 )
+from scrapers.database import save_invoice
 from scrapers.scrapers import NfceScraper
 
 load_dotenv()
@@ -123,7 +125,7 @@ def get_invoice_by_url(url):
         return {}
 
 
-def save_invoice(invoice):
+def save_invoice_db(invoice):
     try:
         save_invoice(
             invoice,
@@ -135,7 +137,7 @@ def save_invoice(invoice):
     except Exception as e:
         logger.error(
             "Failed to save invoice %s: %s",
-            invoice.informacoes.chave_acesso,
+            invoice["informacoes"]["chave_acesso"],
             str(e),
             exc_info=True,
         )
@@ -153,22 +155,15 @@ def get_and_save_invoice(chat_id, url):
             f"Ok, consegui buscar os dados da NFC-e **{access_key}**.",
             parse_mode="Markdown",
         )
-
-        logger.info("Scraped invoice %s", invoice)
     except Exception as e:
         bot.send_message(chat_id, "Deu erro ao obter os dados da NFC-e.")
         logger.error("Failed to scrape", e)
         return
 
     try:
-        invoice_id = save_invoice(invoice)
+        save_invoice_db(invoice)
 
-        if invoice_id > 0:
-            bot.send_message(chat_id, "Salvei os dados da nota.")
-        else:
-            bot.send_message(
-                chat_id, "Infelizmente não consegui salvá-la no banco de dados."
-            )
+        bot.send_message(chat_id, "Salvei os dados da nota.")
     except Exception:
         bot.send_message(chat_id, "Deu erro ao salvar os dados da NFC-e.")
         logger.error("Invoice not found", exc_info=True)

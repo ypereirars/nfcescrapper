@@ -3,18 +3,20 @@ from typing import Annotated
 from fastapi import Depends
 import os
 
-from repositories.company import CompanyRepository
-from repositories.item import ItemRepository
-from .database.schema import PostgresDatabase
-from .repositories.product import ProductRepository
-from .services.services import (
+from database.schema import PostgresDatabase
+from repositories import (
+    CompanyRepository,
+    ItemRepository,
+    ProductRepository,
+    InvoiceRepository,
+)
+from services import (
     CompanyService,
     ItemService,
     ProductService,
     InvoiceService,
 )
-from .repositories.invoice import InvoiceRepository
-from .ports.services import Service
+from ports.services import Service
 
 from dotenv import load_dotenv
 

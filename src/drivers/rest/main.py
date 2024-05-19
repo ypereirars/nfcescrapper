@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import companies_router, invoices_router, items_router, products_router
+from .routers import companies_router, invoices_router, items_router, products_router
 
 app = FastAPI()
 

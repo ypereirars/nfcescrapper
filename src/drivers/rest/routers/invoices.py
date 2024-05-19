@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from dependencies import get_invoices_services
+from drivers.rest.dependencies import get_invoices_services
 from services import InvoiceService
 from .schema import InvoiceModel
 
