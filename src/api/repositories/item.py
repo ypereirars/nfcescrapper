@@ -12,7 +12,7 @@ class ItemRepository(Repository):
         with self.client as session:
             try:
                 invoice = self.client.Item(
-                    product_id=entity.product.id,
+                    product_id=entity.product_id,
                     invoice_id=entity.invoice_id,
                     quantity=entity.quantity,
                     unit_price=entity.unit_price,
