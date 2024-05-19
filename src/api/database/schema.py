@@ -113,7 +113,11 @@ class PostgresDatabase:
         Base.metadata.create_all(bind=self.engine)
 
     def __enter__(self) -> Session:
-        return self.Session()
+        self._session = self.Session()
+
+        return self._session
 
     def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> None:
-        self.Session().close()
+        self._session.close()
+        self._session = None
+        return False
