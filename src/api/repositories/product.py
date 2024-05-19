@@ -9,7 +9,7 @@ class ProductRepository(Repository):
     def __init__(self, client: PostgresDatabase):
         self.client = client
 
-    def save(self, entity: Product) -> None:
+    def save(self, entity: Product) -> Product:
         with self.client as session:
             try:
                 p = self.client.Product(
@@ -18,6 +18,8 @@ class ProductRepository(Repository):
 
                 session.add(p)
                 session.commit()
+
+                return ProductRepository.__to_entity(p)
             except Exception as e:
                 session.rollback()
                 raise e
