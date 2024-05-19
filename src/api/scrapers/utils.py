@@ -71,5 +71,4 @@ def remove_consecutive_spaces(text: str | list[str]) -> str:
     """
     text = " ".join(text) if isinstance(text, list) else text
 
-    return re.sub(r"[\s\t\n ]+"," ", text).strip()
-
+    return re.sub(r"[\s\t\n ]+", " ", text).strip()
