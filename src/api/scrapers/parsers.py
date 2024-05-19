@@ -53,7 +53,7 @@ class CompanyParser(ContentParser):
 
         result = {
             "cnpj": clean_text(info[0].text),
-            "razao_social": clean_text(name).upper(),
+            "razao_social": sanitize_text(name).upper(),
         }
 
         return result
@@ -94,8 +94,8 @@ class InformacoesNotaParser(InfoParser):
             )
             authorization_date = datetime.strptime(date_str, DATE_FORMAT)
 
-            result["numero"] = clean_text(info_contents[0])
-            result["serie"] = clean_text(info_contents[1])
+            result["numero"] = sanitize_text(info_contents[0])
+            result["serie"] = sanitize_text(info_contents[1])
             result["data_emissao"] = emission_date
             result["protocolo_autorizacao"] = protocol
             result["data_autorizacao"] = authorization_date
@@ -234,15 +234,19 @@ class NfceParser(Parser):
             "empresa": CompanyParser(),
             "informacoes": InformacoesNotaParser(),
             "tributos": TaxParser(),
-            "itens": ItemsParser(),
             "totais": TotalsParser(),
+            "itens": ItemsParser(),
         }
 
     def parse(self, page) -> dict[str, Any]:
         data = {}
         for name, parser in self.parsers.items():
             try:
-                data[name] = {**parser.parse(page)}
+                if name == "itens":
+                    items = parser.parse(page)
+                    data[name] = items["itens"]
+                else:
+                    data[name] = {**parser.parse(page)}
             except Exception:
                 data[name] = {}
 
