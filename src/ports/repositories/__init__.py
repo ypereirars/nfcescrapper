@@ -1,6 +1,6 @@
 from abc import ABC
 from typing import Any
-from api.domain import Entity
+from domain import Entity
 
 __all__ = ["Repository"]
 

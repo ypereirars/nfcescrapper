@@ -1,3 +1,4 @@
+name: nfce
 services:
   api:
     build:
@@ -13,24 +14,9 @@ services:
       - db
     links:
       - db
-    command: ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
     environment:
       POSTGRES_HOST: db
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-
-  db:
-    image: postgres
-    restart: always
-    shm_size: 128mb
-    expose:
-      - 5432
-    ports:
-      - 5432:5432
-    volumes:
-      - database_data:/var/lib/postgresql/data
-    environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -49,10 +35,25 @@ services:
       - db
     links:
       - db
-    command: ["python", "-m", "api.bots.telegram"]
+    command: ["python", "-m", "bots.telegram"]
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       POSTGRES_HOST: db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}

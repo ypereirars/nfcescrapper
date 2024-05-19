@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import Depends
 import os
 
-from api.repositories.company import CompanyRepository
-from api.repositories.item import ItemRepository
+from repositories.company import CompanyRepository
+from repositories.item import ItemRepository
 from .database.schema import PostgresDatabase
 from .repositories.product import ProductRepository
 from .services.services import (

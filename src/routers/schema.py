@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
-from api.domain import Product, Company, Address, EletronicInvoice, Item
-from api.domain.value_objects.value_objects import Taxes
+from domain import Product, Company, Address, EletronicInvoice, Item
+from domain.value_objects.value_objects import Taxes
 
 __all__ = ["ProductModel", "CompanyModel", "ItemModel", "InvoiceModel"]
 

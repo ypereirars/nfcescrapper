@@ -2,10 +2,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from api.dependencies import get_products_services
-from api.services import ProductService
+from dependencies import get_products_services
+from services import ProductService
 from .schema import ProductModel
-from api.domain import Product
+from domain import Product
 
 __all__ = ["router"]
 

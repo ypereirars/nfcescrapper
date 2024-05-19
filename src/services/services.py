@@ -1,12 +1,12 @@
 from typing import Any
-from api.ports.services import Service
-from api.repositories import (
+from ports.services import Service
+from repositories import (
     CompanyRepository,
     InvoiceRepository,
     ItemRepository,
     ProductRepository,
 )
-from api.routers.schema import CompanyModel, InvoiceModel, ItemModel, ProductModel
+from routers.schema import CompanyModel, InvoiceModel, ItemModel, ProductModel
 
 __all__ = ["ProductService", "CompanyService", "InvoiceService", "ItemService"]
 

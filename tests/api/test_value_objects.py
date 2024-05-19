@@ -1,4 +1,4 @@
-from api.domain import Taxes
+from domain import Taxes
 
 
 def test_sum_total_taxes():

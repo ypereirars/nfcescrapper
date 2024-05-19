@@ -2,8 +2,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from api.dependencies import get_invoices_services
-from api.services import InvoiceService
+from dependencies import get_invoices_services
+from services import InvoiceService
 from .schema import InvoiceModel
 
 __all__ = ["router"]

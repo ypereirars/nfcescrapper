@@ -1,7 +1,7 @@
 from typing import Any
-from api.database import PostgresDatabase
-from api.domain import Item, Product
-from api.ports.repositories import Repository
+from database import PostgresDatabase
+from domain import Item, Product
+from ports.repositories import Repository
 
 
 class ItemRepository(Repository):

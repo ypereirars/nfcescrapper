@@ -1,4 +1,4 @@
-from src.api.scrapers.utils import (
+from src.scrapers.utils import (
     remove_consecutive_spaces,
     to_float,
     sanitize_text,

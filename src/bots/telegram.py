@@ -4,11 +4,25 @@ from telebot import TeleBot, logger
 import logging
 from dotenv import load_dotenv
 
-from api.scrapers.scrapers import NfceScraper
+from database.schema import PostgresDatabase
+from repositories import (
+    CompanyRepository,
+    InvoiceRepository,
+    ItemRepository,
+    ProductRepository,
+)
+from scrapers.scrapers import NfceScraper
 
 load_dotenv()
 
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+
+database = PostgresDatabase(
+    database=os.getenv("POSTGRES_DB"),
+    username=os.getenv("POSTGRES_USER"),
+    password=os.getenv("POSTGRES_PASSWORD"),
+    host=os.getenv("POSTGRES_HOST"),
+)
 
 logger.setLevel(logging.INFO)
 
@@ -44,7 +58,7 @@ class User:
         return wrapper
 
 
-@bot.message_handler(commands=["start"])
+@bot.message_handler(commands=["comecar"])
 @User.get_user
 def start_handler(message, user=None):
     response_message = (
@@ -57,13 +71,13 @@ def start_handler(message, user=None):
     bot.reply_to(message, response_message, parse_mode="Markdown")
 
 
-@bot.message_handler(commands=["help"])
+@bot.message_handler(commands=["ajuda"])
 def help_handler(message):
     help_message = (
         "Para usar o bot, me envie a URL de uma NFC-e que eu salvo para você.\n\n"
         + "Comandos disponíveis:\n"
-        + "  - /start - Exibe a mensagem inicial do bot.\n\n"
-        + "  - /help - Exibe esta mensagem de ajuda.\n\n"
+        + "  - /comecar - Exibe a mensagem inicial do bot.\n\n"
+        + "  - /ajuda - Exibe esta mensagem de ajuda.\n\n"
         + "  - /nfce url <url> - Salva a NFC-e com a URL informada.\n\n"
         + "  - /nfce chave <chave> - Salva a NFC-e com a chave de acesso informada.\n\n"
     )
@@ -111,8 +125,13 @@ def get_invoice_by_url(url):
 
 def save_invoice(invoice):
     try:
-        # invoice_id = save(invoice)
-        return 0
+        save_invoice(
+            invoice,
+            invoice_repository=InvoiceRepository(database),
+            company_repository=CompanyRepository(database),
+            product_repository=ProductRepository(database),
+            item_repository=ItemRepository(database),
+        )
     except Exception as e:
         logger.error(
             "Failed to save invoice %s: %s",

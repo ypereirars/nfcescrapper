@@ -1,7 +1,7 @@
 from typing import Any
-from api.database import PostgresDatabase
-from api.domain import EletronicInvoice, Company, Taxes, Address
-from api.ports.repositories import Repository
+from database import PostgresDatabase
+from domain import EletronicInvoice, Company, Taxes, Address
+from ports.repositories import Repository
 
 
 class InvoiceRepository(Repository):
@@ -10,6 +10,7 @@ class InvoiceRepository(Repository):
         self.client = client
 
     def save(self, entity: EletronicInvoice) -> EletronicInvoice:
+        # TODO: If the invoice already exists, raise exception
         with self.client as session:
             try:
                 p = self.client.Invoice(

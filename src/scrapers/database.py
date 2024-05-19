@@ -1,9 +1,9 @@
 from typing import Any
-from api.domain import EletronicInvoice, Company, Item, Product, Totals, Taxes, Address
-from api.repositories import InvoiceRepository
-from api.repositories.company import CompanyRepository
-from api.repositories.item import ItemRepository
-from api.repositories.product import ProductRepository
+from domain import EletronicInvoice, Company, Item, Product, Totals, Taxes, Address
+from repositories import InvoiceRepository
+from repositories.company import CompanyRepository
+from repositories.item import ItemRepository
+from repositories.product import ProductRepository
 
 
 def _dict_to_entity(data: dict[str, Any]) -> EletronicInvoice:

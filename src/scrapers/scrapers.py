@@ -1,8 +1,8 @@
 from typing import Any
 from bs4 import BeautifulSoup
 
-from api.scrapers.browsers import get_browser
-from api.scrapers.parsers import NfceParser
+from scrapers.browsers import get_browser
+from scrapers.parsers import NfceParser
 from .interfaces import Parser, Scraper
 from selenium.common.exceptions import TimeoutException as WebDriverTimeoutException
 from selenium.webdriver.remote.webdriver import WebDriver

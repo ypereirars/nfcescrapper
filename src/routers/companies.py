@@ -2,8 +2,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from api.dependencies import get_companies_services
-from api.services import CompanyService
+from dependencies import get_companies_services
+from services import CompanyService
 from .schema import CompanyModel
 
 __all__ = ["router"]

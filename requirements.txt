@@ -1,8 +1,11 @@
+aiopg==1.4.0
+asyncio==3.4.3
 beautifulsoup4==4.12.3
-fastapi==0.110.1
-psycopg2==2.9.9
+fastapi==0.111.0
+pydantic==2.7.1
+python-dotenv==1.0.1
 selenium==4.19.0
+SQLAlchemy==2.0.29
 telebot==0.0.5
 uvicorn==0.29.0
 webdriver-manager==4.0.1
-SQLAlchemy==2.0.29
