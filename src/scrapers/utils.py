@@ -1,19 +1,7 @@
 import re
-import json
+from .constants import UNWANTED_WORDS
 
-UNWANTED_WORDS = [
-    r"UN: *",
-    r"Vl. Unit.:",
-    r"Qtde.:",
-    r"Código:",
-    r"CNPJ:",
-    r"\(",
-    r"\)",
-    r"\n",
-    r"\r",
-    r"\t",
-]
-UNWANTED_WORDS_REGEX = re.compile("|".join(UNWANTED_WORDS))
+__all__ = ["sanitize_text", "clean_text", "to_float"]
 
 
 def sanitize_text(text: str) -> str:
@@ -27,9 +15,10 @@ def sanitize_text(text: str) -> str:
     """
 
     try:
-        text = UNWANTED_WORDS_REGEX.sub("", text)
+        words_to_remove = re.compile("|".join(UNWANTED_WORDS))
+        text = words_to_remove.sub("", text)
         return text.strip()
-    except:
+    except Exception:
         return ""
 
 
@@ -43,9 +32,9 @@ def clean_text(text: str) -> str:
         str: cleared text
     """
     try:
-        text = re.sub(r"[\s.\-/]", "", text)
+        text = re.sub(r"[\s.\-/]", "", sanitize_text(text))
         return text.strip()
-    except Exception as ex:
+    except Exception:
         return ""
 
 
@@ -60,17 +49,26 @@ def to_float(number: str, radix: str = ",", default: float = 0.0) -> float:
     Returns:
         float: converted string
     """
-    number = sanitize_text(number)
+    number = sanitize_text(str(number))
     if number == "":
         return default
 
     try:
 
         return float(number.replace(radix, "."))
-    except:
+    except Exception:
         return default
 
 
-def save_json(data, output_path):
-    with open(output_path, "w", encoding="utf-8") as outfile:
-        return json.dump(data, outfile, ensure_ascii=False, indent=4)
+def remove_consecutive_spaces(text: str | list[str]) -> str:
+    """Remove consecutive spaces from a string
+
+    Args:
+        text (str): text to be cleaned
+
+    Returns:
+        str: cleaned text
+    """
+    text = " ".join(text) if isinstance(text, list) else text
+
+    return re.sub(r"[\s\t\n ]+", " ", text).strip()

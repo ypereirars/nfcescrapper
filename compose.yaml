@@ -1,3 +1,4 @@
+name: nfce
 services:
   api:
     build:
@@ -6,15 +7,37 @@ services:
     expose:
       - 80
     volumes:
-      - ./:/app
+      - ./src:/app
     ports:
-      - 5001:80
+      - 8000:80
     depends_on:
       - db
     links:
       - db
-    command: ["uvicorn", "nfce.api:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+    command: ["uvicorn", "drivers.rest.main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
     environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  telegram_bot:
+    build:
+      context: .
+    restart: always
+    expose:
+      - 80
+    volumes:
+      - ./src:/app
+    ports:
+      - 5002:80
+    depends_on:
+      - db
+    links:
+      - db
+    command: ["python", "-m", "drivers.bots.telegram"]
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       POSTGRES_HOST: db
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -31,28 +54,6 @@ services:
     volumes:
       - database_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-
-  telegram_bot:
-    build:
-      context: .
-    restart: always
-    expose:
-      - 80
-    volumes:
-      - ./:/app
-    ports:
-      - 5002:80
-    depends_on:
-      - db
-    links:
-      - db
-    command: ["python", "-m", "nfce.telegram_bot"]
-    environment:
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-      POSTGRES_HOST: db
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}

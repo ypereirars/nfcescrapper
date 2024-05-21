@@ -5,6 +5,9 @@ from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 
 
+__all__ = ["get_browser"]
+
+
 def get_browser() -> Firefox:
     """Get a headless Firefox browser
 
@@ -17,7 +20,6 @@ def get_browser() -> Firefox:
     WEBDRIVER_PATH = os.environ.get("WEBDRIVER_PATH")
 
     if not os.path.exists(WEBDRIVER_PATH):
-        print("Downloading webdriver")
         WEBDRIVER_PATH = GeckoDriverManager().install()
 
     service = Service(WEBDRIVER_PATH)
