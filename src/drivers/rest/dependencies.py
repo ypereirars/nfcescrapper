@@ -1,9 +1,7 @@
-from functools import lru_cache
 from typing import Annotated
 from fastapi import Depends
-import os
-
-from database.schema import PostgresDatabase
+from settings.database import get_db_connection
+from sqlalchemy.orm import Session
 from repositories import (
     CompanyRepository,
     ItemRepository,
@@ -24,7 +22,6 @@ load_dotenv()
 
 
 __all__ = [
-    "get_postgres_client",
     "get_products_repository",
     "get_companies_repository",
     "get_invoices_repository",
@@ -36,43 +33,30 @@ __all__ = [
 ]
 
 
-@lru_cache
-def get_postgres_client() -> PostgresDatabase:
-    database = os.getenv("POSTGRES_DB")
-    user = os.getenv("POSTGRES_USER")
-    password = os.getenv("POSTGRES_PASSWORD")
-    host = os.getenv("POSTGRES_HOST")
-
-    if all([database, user, password, host]):
-        return PostgresDatabase(database, user, password, host=host)
-
-    raise ValueError("Missing environment variables for Postgres connection")
-
-
 # Repositories
 
 
 def get_products_repository(
-    postgres_client: PostgresDatabase = Depends(get_postgres_client),
-) -> PostgresDatabase:
+    postgres_client: Session = Depends(get_db_connection),
+) -> Session:
     return ProductRepository(postgres_client)
 
 
 def get_companies_repository(
-    postgres_client: PostgresDatabase = Depends(get_postgres_client),
-) -> PostgresDatabase:
+    postgres_client: Session = Depends(get_db_connection),
+) -> Session:
     return CompanyRepository(postgres_client)
 
 
 def get_invoices_repository(
-    postgres_client: PostgresDatabase = Depends(get_postgres_client),
-) -> PostgresDatabase:
+    postgres_client: Session = Depends(get_db_connection),
+) -> Session:
     return InvoiceRepository(postgres_client)
 
 
 def get_items_repository(
-    postgres_client: PostgresDatabase = Depends(get_postgres_client),
-) -> PostgresDatabase:
+    postgres_client: Session = Depends(get_db_connection),
+) -> Session:
     return ItemRepository(postgres_client)
 
 
