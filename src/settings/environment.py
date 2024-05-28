@@ -1,7 +1,7 @@
 from functools import lru_cache
 import os
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 @lru_cache
@@ -11,16 +11,16 @@ def get_env_filename():
 
 
 class EnvironmentSettings(BaseSettings):
-    API_VERSION: str
-    APP_NAME: str
-    DATABASE_DIALECT: str
-    DATABASE_HOSTNAME: str
-    DATABASE_NAME: str
-    DATABASE_PASSWORD: str
-    DATABASE_PORT: int
-    DATABASE_USERNAME: str
-    DEBUG_MODE: bool
-    TELEGRAM_BOT_TOKEN: str
+    API_VERSION: str = os.getenv("API_VERSION", "v1")
+    APP_NAME: str = os.getenv("APP_NAME", "FastAPI")
+    DATABASE_DIALECT: str = os.getenv("DATABASE_DIALECT", "postgresql")
+    DATABASE_HOSTNAME: str = os.getenv("DATABASE_HOSTNAME", "localhost")
+    DATABASE_NAME: str = os.getenv("DATABASE_NAME", "")
+    DATABASE_PASSWORD: str = os.getenv("DATABASE_PASSWORD", "")
+    DATABASE_PORT: int = os.getenv("DATABASE_PORT", 5432)
+    DATABASE_USERNAME: str = os.getenv("DATABASE_USERNAME", "")
+    DEBUG_MODE: bool = os.getenv("DEBUG_MODE", False)
+    TELEGRAM_BOT_TOKEN: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
 
     class Config:
         env_file = get_env_filename()
