@@ -1,53 +1,54 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
-from sqlalchemy import Column, DateTime, Integer, Text, Float, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, String, Text, Float, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base
 
 
-__all__ = ["Base", "User", "Product", "Company", "Invoice", "Item"]
+__all__ = [
+    "Schema",
+    "UserSchema",
+    "ProductSchema",
+    "CompanySchema",
+    "InvoiceSchema",
+    "ItemSchema",
+]
 
-Base = declarative_base()
+Schema = declarative_base()
 
 
-class User(Base):
+class UserSchema(Schema):
     __tablename__ = "usuarios"
     id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(Text, name="primeiro_nome")
     last_name = Column(Text, name="ultimo_nome")
     username = Column(Text, name="nome_usuario", unique=True)
-    created_on = Column(
-        DateTime, name="data_criacao", default=datetime.now(datetime.UTC)
-    )
+    created_on = Column(DateTime, name="data_criacao", default=datetime.now(UTC))
 
 
-class Product(Base):
+class ProductSchema(Schema):
     __tablename__ = "produtos"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    code = Column(Text, name="codigo")
+    code = Column(String, name="codigo")
     description = Column(Text, name="descricao")
-    created_on = Column(
-        DateTime, name="data_criacao", default=datetime.now(datetime.UTC)
-    )
+    created_on = Column(DateTime, name="data_criacao", default=datetime.now(UTC))
 
 
-class Company(Base):
+class CompanySchema(Schema):
     __tablename__ = "empresas"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    cnpj = Column(Text, name="cnpj")
+    cnpj = Column(String, name="cnpj")
     name = Column(Text, name="razao_social")
     street = Column(Text, name="logradouro")
-    number = Column(Text, name="numero")
+    number = Column(String, name="numero")
     neighborhood = Column(Text, name="bairro")
     city = Column(Text, name="municipio")
-    state = Column(Text, name="uf")
+    state = Column(String, name="uf")
     complement = Column(Text, name="complemento")
-    zip_code = Column(Text, name="cep")
-    created_on = Column(
-        DateTime, name="data_criacao", default=datetime.now(datetime.UTC)
-    )
+    zip_code = Column(String, name="cep")
+    created_on = Column(DateTime, name="data_criacao", default=datetime.now(UTC))
 
 
-class Invoice(Base):
+class InvoiceSchema(Schema):
     __tablename__ = "notas_fiscais"
     id = Column(Integer, primary_key=True, autoincrement=True)
     company_id = Column(Integer, ForeignKey("empresas.id"), name="id_empresa")
@@ -62,15 +63,13 @@ class Invoice(Base):
     state_tax = Column(Float, name="tributacao_estadual")
     city_tax = Column(Float, name="tributacao_municipal")
     source = Column(Text, name="fonte")
-    created_on = Column(
-        DateTime, name="data_criacao", default=datetime.now(datetime.UTC)
-    )
-    company = relationship("Company", backref="notas_fiscais", lazy=True)
-    items = relationship("Item", backref="notas_fiscais", lazy=True)
-    user = relationship("User", backref="notas_fiscais", lazy=True)
+    created_on = Column(DateTime, name="data_criacao", default=datetime.now(UTC))
+    company = relationship("CompanySchema", backref="notas_fiscais", lazy=True)
+    items = relationship("ItemSchema", backref="notas_fiscais", lazy=True)
+    user = relationship("UserSchema", backref="notas_fiscais", lazy=True)
 
 
-class Item(Base):
+class ItemSchema(Schema):
     __tablename__ = "itens_nota"
     id = Column(Integer, primary_key=True, autoincrement=True)
     product_id = Column(Integer, ForeignKey("produtos.id"), name="id_produto")
@@ -78,8 +77,8 @@ class Item(Base):
     quantity = Column(Float, name="quantidade")
     unit_price = Column(Float, name="preco_unitario")
     unity_of_measurement = Column(Text, name="unidade_medida")
-    created_on = Column(
-        DateTime, name="data_criacao", default=datetime.now(datetime.UTC)
+    created_on = Column(DateTime, name="data_criacao", default=datetime.now(UTC))
+    product = relationship("ProductSchema", backref="notas_fiscais", lazy=True)
+    invoice = relationship(
+        "InvoiceSchema", backref="notas_fiscais", viewonly=True, lazy=True
     )
-    product = relationship("Product", backref="notas_fiscais", lazy=True)
-    invoice = relationship("Invoice", backref="notas_fiscais", viewonly=True, lazy=True)
