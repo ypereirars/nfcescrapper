@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 
 from drivers.rest.dependencies import get_companies_services
 from services import CompanyService
-from .schema import CompanyModel
+from ..schemas.companies import CompanyModel, CompanyPatchRequestModel
 
 __all__ = ["router"]
 
@@ -50,7 +50,7 @@ async def get_company(
 @router.patch("/{company_id}", status_code=status.HTTP_200_OK)
 async def update_company(
     company_id: int,
-    company: CompanyModel,
+    company: CompanyPatchRequestModel,
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> None:
     try:
@@ -73,12 +73,12 @@ async def update_company(
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_company(
-    company: CompanyModel,
+    company: CompanyPatchRequestModel,
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> CompanyModel:
-    entity = service.save(company)
+    model = service.save(company)
 
-    return CompanyModel.from_entity(entity)
+    return model
 
 
 @router.delete("/{company_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -119,7 +119,7 @@ async def get_company_by_cnpj(
             detail="CNPJ da empresa é obrigatório",
         )
 
-    company = service.find_all(cnpj=cnpj)
+    company = service.get_by_cnpj(cnpj=cnpj)
 
     if company is None:
         raise HTTPException(
