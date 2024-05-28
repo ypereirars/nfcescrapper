@@ -19,5 +19,5 @@ class Repository(ABC):
     def find_all(self, **filters: dict[str, Any]) -> list[Entity]:
         pass
 
-    def update(self, entity: Entity) -> None:
+    def update(self, int: id, entity: Entity) -> None:
         pass
