@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from ..value_objects import Address, Taxes, Totals
 
 
@@ -19,6 +20,7 @@ class Company(Entity):
     name: str = ""
     cnpj: str = ""
     address: Address = None
+    created_on: datetime = datetime.now()
 
     @property
     def __dict__(self):
@@ -26,6 +28,7 @@ class Company(Entity):
             "id": self.id,
             "name": self.name,
             "cnpj": self.cnpj,
+            "created_on": self.created_on.strftime("%Y-%m-%d %H:%M:%S"),
             **vars(self.address),
         }
 

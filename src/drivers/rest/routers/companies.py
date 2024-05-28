@@ -66,7 +66,7 @@ async def update_company(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ID da empresa inválido"
         )
 
-    service.update(company)
+    service.update(company_id, company)
 
     return company
 

@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -15,3 +16,4 @@ class CompanyPatchRequestModel(BaseModel):
 
 class CompanyModel(CompanyPatchRequestModel):
     id: int
+    created_on: datetime = None

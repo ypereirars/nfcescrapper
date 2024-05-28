@@ -71,8 +71,8 @@ class CompanyService(Service):
 
         return CompanyModel(**vars(entity[0])) if entity else None
 
-    def update(self, model: CompanyPatchRequestModel) -> CompanyModel:
-        self.repository.update(self.__from_model(model))
+    def update(self, id: int, model: CompanyPatchRequestModel) -> None:
+        self.repository.update(id, self.__from_model(model))
 
     def __from_model(self, model: CompanyPatchRequestModel):
         address = Address(

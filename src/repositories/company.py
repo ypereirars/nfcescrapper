@@ -20,6 +20,7 @@ class CompanyRepository(Repository):
             state=entity.address.state,
             complement=entity.address.complement,
             zip_code=entity.address.zip_code,
+            created_on=entity.created_on,
         )
 
         self.session.add(company)
@@ -35,6 +36,7 @@ class CompanyRepository(Repository):
 
     def find_by_id(self, id: int) -> Company:
         company = self.session.query(CompanySchema).get(id)
+
         return CompanyRepository.__to_entity(company) if company else None
 
     def find_all(self, **filters) -> list[Company]:
@@ -46,8 +48,20 @@ class CompanyRepository(Repository):
             else []
         )
 
-    def update(self, id: int, company: CompanySchema) -> None:
-        company.id = id
+    def update(self, id: int, company: Company) -> None:
+        company = CompanySchema(
+            id=id,
+            cnpj=company.cnpj,
+            name=company.name,
+            street=company.address.street,
+            number=company.address.number,
+            neighborhood=company.address.neighborhood,
+            city=company.address.city,
+            state=company.address.state,
+            complement=company.address.complement,
+            zip_code=company.address.zip_code,
+            created_on=company.created_on,
+        )
         self.session.merge(company)
         self.session.commit()
 
@@ -64,5 +78,9 @@ class CompanyRepository(Repository):
         )
 
         return Company(
-            id=company.id, name=company.name, cnpj=company.cnpj, address=address
+            id=company.id,
+            name=company.name,
+            cnpj=company.cnpj,
+            address=address,
+            created_on=company.created_on,
         )
