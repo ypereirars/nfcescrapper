@@ -16,4 +16,4 @@ class CompanyPatchRequestModel(BaseModel):
 
 class CompanyModel(CompanyPatchRequestModel):
     id: int
-    created_on: datetime = None
+    created_on: datetime = datetime.now()

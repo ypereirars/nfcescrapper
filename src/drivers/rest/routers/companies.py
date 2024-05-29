@@ -68,8 +68,6 @@ async def update_company(
 
     service.update(company_id, company)
 
-    return company
-
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_company(
