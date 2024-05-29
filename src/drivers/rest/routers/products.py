@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from drivers.rest.dependencies import get_products_services
 from drivers.rest.schemas.products import ProductModel, ProductPatchRequestModel
 from services import ProductService
-from domain import Product
 
 __all__ = ["router"]
 
