@@ -1,5 +1,6 @@
 from typing import Any
-from domain.entities.entities import Company, Address
+from domain.entities.entities import Company, Address, Product
+from drivers.rest.schemas.products import ProductModel
 from ports.services import Service
 from repositories import (
     CompanyRepository,
@@ -10,7 +11,6 @@ from repositories import (
 from drivers.rest.routers.schema import (
     InvoiceModel,
     ItemModel,
-    ProductModel,
 )
 
 from drivers.rest.schemas.companies import CompanyModel, CompanyPatchRequestModel
@@ -24,8 +24,8 @@ class ProductService(Service):
         self.repository = repository
 
     def save(self, model: ProductModel) -> ProductModel:
-        entity = self.repository.save(model.to_entity())
-        return ProductModel.from_entity(entity)
+        entity = self.repository.save(Product(**vars(model)))
+        return ProductModel(**vars(entity))
 
     def delete(self, id: int) -> None:
         self.repository.delete(id)
@@ -33,15 +33,20 @@ class ProductService(Service):
     def find_by_id(self, id: int) -> ProductModel:
         entity = self.repository.find_by_id(id)
 
-        return ProductModel.from_entity(entity) if entity else None
+        return ProductModel(**vars(entity)) if entity else None
 
     def find_all(self, **filters: dict[str, Any]) -> list[ProductModel]:
         entities = self.repository.find_all(**filters)
 
-        return [ProductModel.from_entity(entity) for entity in entities]
+        return [ProductModel(**vars(entity)) for entity in entities]
 
-    def update(self, model: ProductModel) -> None:
-        self.repository.update(model.to_entity())
+    def find_by_code(self, code: str) -> ProductModel:
+        entity = self.repository.find_all(code=code)
+
+        return ProductModel(**vars(entity[0])) if entity else None
+
+    def update(self, id: int, model: ProductModel) -> None:
+        self.repository.update(id, Product(**vars(model)))
 
 
 class CompanyService(Service):

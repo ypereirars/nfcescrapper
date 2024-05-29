@@ -35,11 +35,37 @@ class Company(Entity):
 
 @dataclass
 class Product(Entity):
-    code: str = ""
-    description: str = ""
+    def __init__(
+        self,
+        id: int = 0,
+        code: str = "",
+        description: str = "",
+        created_on: datetime = datetime.now(),
+    ) -> None:
+        self.id = id
+        self.code = code
+        self.description = description
+        self.created_on = created_on
+
+    @property
+    def code(self):
+        return self.__code
+
+    @code.setter
+    def code(self, value):
+        self.__code = f"{value:0>13}"
 
     def __str__(self):
         return f"{self.code:0>13} {self.description}"
+
+    @property
+    def __dict__(self):
+        return {
+            "id": self.id,
+            "code": self.code,
+            "description": self.description,
+            "created_on": self.created_on.strftime("%Y-%m-%d %H:%M:%S"),
+        }
 
 
 @dataclass
