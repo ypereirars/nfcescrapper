@@ -7,12 +7,14 @@ from repositories import (
     ItemRepository,
     ProductRepository,
     InvoiceRepository,
+    UserRepository,
 )
 from services import (
     CompanyService,
     ItemService,
     ProductService,
     InvoiceService,
+    UserService,
 )
 from ports.services import Service
 
@@ -26,10 +28,12 @@ __all__ = [
     "get_companies_repository",
     "get_invoices_repository",
     "get_items_repository",
+    "get_users_repository",
     "get_products_services",
     "get_companies_services",
     "get_invoices_services",
     "get_items_services",
+    "get_users_services",
 ]
 
 
@@ -60,6 +64,12 @@ def get_items_repository(
     return ItemRepository(postgres_client)
 
 
+def get_users_repository(
+    postgres_client: Session = Depends(get_db_connection),
+) -> Session:
+    return UserRepository(postgres_client)
+
+
 # Services
 
 
@@ -85,3 +95,9 @@ def get_items_services(
     repository: Annotated[ItemRepository, Depends(get_items_repository)],
 ) -> Service:
     return ItemService(repository)
+
+
+def get_users_services(
+    repository: Annotated[UserRepository, Depends(get_users_repository)],
+) -> Service:
+    return UserService(repository)

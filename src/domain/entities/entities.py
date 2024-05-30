@@ -13,6 +13,7 @@ class User(Entity):
     first_name: str = ""
     last_name: str = ""
     username: str = ""
+    created_on: datetime = datetime.now()
 
 
 @dataclass
@@ -87,7 +88,6 @@ class Item(Entity):
         product = vars(self.product) if self.product else {}
         id = product.pop("id")
         product["product_id"] = id
-        print(product)
 
         return {
             **product,
