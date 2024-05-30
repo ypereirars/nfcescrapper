@@ -76,6 +76,7 @@ class Item(Entity):
     quantity: int = 1
     unit_price: float = 0.0
     unity_of_measurement: str = "UN"
+    created_on: datetime = datetime.now()
 
     @property
     def total_price(self) -> float:
@@ -83,12 +84,13 @@ class Item(Entity):
 
     @property
     def __dict__(self):
-        product = vars(self.product)
+        product = vars(self.product) if self.product else {}
         id = product.pop("id")
         product["product_id"] = id
+        print(product)
 
         return {
-            **vars(product),
+            **product,
             "quantity": self.quantity,
             "unit_price": self.unit_price,
             "unity_of_measurement": self.unity_of_measurement,

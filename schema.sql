@@ -56,6 +56,5 @@ CREATE TABLE public.itens_nota (
 	quantidade decimal NULL DEFAULT 0,
 	preco_unitario decimal NOT NULL DEFAULT 0.0,
 	unidade_medida varchar DEFAULT NULL,
-	id_empresa bigserial REFERENCES empresas(id) ON DELETE SET NULL ON UPDATE CASCADE,
 	data_criacao timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
