@@ -18,25 +18,25 @@ async def get_all_products(
     return service.find_all()
 
 
-@router.get("/{product_id}", status_code=status.HTTP_200_OK)
+@router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_product(
-    product_id: int,
+    id: int,
     service: Annotated[ProductService, Depends(get_products_services)],
 ) -> None:
     try:
-        product_id = int(product_id)
+        id = int(id)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="ID do produto é obrigatório",
         )
 
-    if product_id <= 0:
+    if id <= 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ID do produto inválido"
         )
 
-    product = service.find_by_id(product_id)
+    product = service.find_by_id(id)
 
     if product is None:
         raise HTTPException(
@@ -46,26 +46,26 @@ async def get_product(
     return product
 
 
-@router.patch("/{product_id}", status_code=status.HTTP_200_OK)
+@router.patch("/{id}", status_code=status.HTTP_200_OK)
 async def update_product(
-    product_id: int,
+    id: int,
     product: ProductPatchRequestModel,
     service: Annotated[ProductService, Depends(get_products_services)],
 ) -> None:
     try:
-        product_id = int(product_id)
+        id = int(id)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="ID do produto é obrigatório",
         )
 
-    if product_id <= 0:
+    if id <= 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ID do produto inválido"
         )
 
-    service.update(product_id, product)
+    service.update(id, product)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -79,30 +79,30 @@ async def create_product(
     return model
 
 
-@router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(
-    product_id: int,
+    id: int,
     service: Annotated[ProductService, Depends(get_products_services)],
 ) -> None:
     """Delete a product by it's ID
 
     Args:
-        product_id (int): The product ID
+        id (int): The product ID
     """
     try:
-        product_id = int(product_id)
+        id = int(id)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="ID do produto é obrigatório",
         )
 
-    if product_id <= 0:
+    if id <= 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ID do produto inválido"
         )
 
-    service.delete(product_id)
+    service.delete(id)
 
 
 @router.get("/code/{code}", status_code=status.HTTP_200_OK)
@@ -118,8 +118,6 @@ async def get_product_by_code(
         )
 
     products = service.find_by_code(code=code)
-
-    print(">>", products)
 
     if products is None:
         raise HTTPException(

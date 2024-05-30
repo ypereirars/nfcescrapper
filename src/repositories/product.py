@@ -40,7 +40,6 @@ class ProductRepository(Repository):
 
     def update(self, id: int, entity: Product) -> None:
         product = ProductSchema(id=id, code=entity.code, description=entity.description)
-        print(vars(product))
         self.session.merge(product)
         self.session.commit()
 

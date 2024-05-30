@@ -23,25 +23,25 @@ async def get_all_items(
     return service.find_all()
 
 
-@router.get("/{item_id}", status_code=status.HTTP_200_OK)
+@router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_item(
-    item_id: int,
+    id: int,
     service: Annotated[ItemService, Depends(get_items_services)],
 ) -> None:
     try:
-        item_id = int(item_id)
+        id = int(id)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="ID da empresa é obrigatório",
         )
 
-    if item_id <= 0:
+    if id <= 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ID da empresa inválido"
         )
 
-    item = service.find_by_id(item_id)
+    item = service.find_by_id(id)
 
     if item is None:
         raise HTTPException(
@@ -72,8 +72,6 @@ async def update_item(
 
     service.update(id, item)
 
-    return item
-
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_item(
@@ -85,30 +83,30 @@ async def create_item(
     return entity
 
 
-@router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_item(
-    item_id: int,
+    id: int,
     service: Annotated[ItemService, Depends(get_items_services)],
 ) -> None:
     """Delete a item by it's ID
 
     Args:
-        item_id (int): The item ID
+        id (int): The item ID
     """
     try:
-        item_id = int(item_id)
+        id = int(id)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="ID do item é obrigatório",
         )
 
-    if item_id <= 0:
+    if id <= 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ID do item inválido"
         )
 
-    service.delete(item_id)
+    service.delete(id)
 
 
 @router.get("/invoices/{id}", status_code=status.HTTP_200_OK)
