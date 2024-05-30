@@ -3,7 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status, HTTPException
 
 from drivers.rest.dependencies import get_users_services
-from drivers.rest.schemas.users import UserModel, UserPatchRequestModel
+from drivers.rest.schemas.users import (
+    UserModel,
+    UserPatchRequestModel,
+    UserPostRequestModel,
+)
 from services import UserService
 
 __all__ = ["router"]
@@ -28,15 +32,30 @@ async def get_user(
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID do produto é obrigatório",
+            detail="ID do usuário é obrigatório",
         )
 
     if id <= 0:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do produto inválido"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido"
         )
 
     user = service.find_by_id(id)
+
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Produto não encontrado"
+        )
+
+    return user
+
+
+@router.get("/{username}", status_code=status.HTTP_200_OK)
+async def get_user_by_username(
+    username: str,
+    service: Annotated[UserService, Depends(get_users_services)],
+) -> None:
+    user = service.find_by_username(username)
 
     if user is None:
         raise HTTPException(
@@ -57,12 +76,12 @@ async def update_user(
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID do produto é obrigatório",
+            detail="ID do usuário é obrigatório",
         )
 
     if id <= 0:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do produto inválido"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido"
         )
 
     service.update(id, user)
@@ -72,7 +91,7 @@ async def update_user(
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(
-    user: UserPatchRequestModel,
+    user: UserPostRequestModel,
     service: Annotated[UserService, Depends(get_users_services)],
 ) -> UserModel:
 
@@ -96,12 +115,12 @@ async def delete_user(
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID do produto é obrigatório",
+            detail="ID do usuário é obrigatório",
         )
 
     if id <= 0:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do produto inválido"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido"
         )
 
     service.delete(id)

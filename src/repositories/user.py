@@ -10,13 +10,23 @@ class UserRepository(Repository):
         self.session = session
 
     def save(self, entity: User) -> User:
-        user = UserSchema(first_name=entity.first_name, last_name=entity.last_name)
+        user = UserSchema(
+            first_name=entity.first_name,
+            last_name=entity.last_name,
+            username=entity.username,
+        )
 
         self.session.add(user)
         self.session.commit()
         self.session.refresh(user)
 
-        return User(**vars(user))
+        return User(
+            id=user.id,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            username=user.username,
+            created_on=user.created_on,
+        )
 
     def delete(self, id: int) -> None:
         self.session.query(UserSchema).filter_by(id=id).delete()
