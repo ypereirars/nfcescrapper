@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from drivers.rest.dependencies import get_companies_services
+from drivers.rest.dependencies import get_companies_services, validate_id_input
 from services import CompanyService
 from ..schemas.companies import CompanyModel, CompanyPatchRequestModel
 
@@ -21,21 +21,9 @@ async def get_all_companies(
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_company(
-    id: int,
+    id: Annotated[int, Depends(validate_id_input)],
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> None:
-    try:
-        id = int(id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID da empresa é obrigatório",
-        )
-
-    if id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID da empresa inválido"
-        )
 
     company = service.find_by_id(id)
 
@@ -44,22 +32,10 @@ async def get_company(
 
 @router.patch("/{id}", status_code=status.HTTP_200_OK)
 async def update_company(
-    id: int,
+    id: Annotated[int, Depends(validate_id_input)],
     company: CompanyPatchRequestModel,
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> None:
-    try:
-        id = int(id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID da empresa é obrigatório",
-        )
-
-    if id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID da empresa inválido"
-        )
 
     service.update(id, company)
 
@@ -76,7 +52,7 @@ async def create_company(
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_company(
-    id: int,
+    id: Annotated[int, Depends(validate_id_input)],
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> None:
     """Delete a company by it's ID
@@ -84,19 +60,6 @@ async def delete_company(
     Args:
         id (int): The company ID
     """
-    try:
-        id = int(id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID da empresa é obrigatório",
-        )
-
-    if id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID da empresa inválido"
-        )
-
     service.delete(id)
 
 

@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import Depends
+from fastapi import Depends, status, HTTPException
 from settings.database import get_db_connection
 from sqlalchemy.orm import Session
 from repositories import (
@@ -101,3 +101,13 @@ def get_users_services(
     repository: Annotated[UserRepository, Depends(get_users_repository)],
 ) -> Service:
     return UserService(repository)
+
+
+def validate_id_input(id: int):
+    if not isinstance(id, int) or int(id) <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="O ID deve ser um número maior que zero.",
+        )
+
+    return int(id)

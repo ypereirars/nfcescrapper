@@ -1,8 +1,8 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status
 
-from drivers.rest.dependencies import get_items_services
+from drivers.rest.dependencies import get_items_services, validate_id_input
 from drivers.rest.schemas.items import (
     ItemModel,
     ItemPatchRequestModel,
@@ -25,21 +25,9 @@ async def get_all_items(
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_item(
-    id: int,
+    id: Annotated[int, Depends(validate_id_input)],
     service: Annotated[ItemService, Depends(get_items_services)],
 ) -> None:
-    try:
-        id = int(id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID da empresa é obrigatório",
-        )
-
-    if id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID da empresa inválido"
-        )
 
     item = service.find_by_id(id)
 
@@ -48,22 +36,10 @@ async def get_item(
 
 @router.patch("/{id}", status_code=status.HTTP_200_OK)
 async def update_item(
-    id: int,
+    id: Annotated[int, Depends(validate_id_input)],
     item: ItemPatchRequestModel,
     service: Annotated[ItemService, Depends(get_items_services)],
 ) -> None:
-    try:
-        id = int(id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID da empresa é obrigatório",
-        )
-
-    if id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID da empresa inválido"
-        )
 
     service.update(id, item)
 
@@ -80,7 +56,7 @@ async def create_item(
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_item(
-    id: int,
+    id: Annotated[int, Depends(validate_id_input)],
     service: Annotated[ItemService, Depends(get_items_services)],
 ) -> None:
     """Delete a item by it's ID
@@ -88,37 +64,14 @@ async def delete_item(
     Args:
         id (int): The item ID
     """
-    try:
-        id = int(id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID do item é obrigatório",
-        )
-
-    if id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do item inválido"
-        )
 
     service.delete(id)
 
 
 @router.get("/invoices/{id}", status_code=status.HTTP_200_OK)
 async def get_by_invoice_id(
-    id: int,
+    id: Annotated[int, Depends(validate_id_input)],
     service: Annotated[ItemService, Depends(get_items_services)],
 ) -> list[ItemModel]:
-    try:
-        id = int(id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID da nota é obrigatório",
-        )
-    if id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID da nota fiscal inválido"
-        )
 
     return service.find_all(invoice_id=id)

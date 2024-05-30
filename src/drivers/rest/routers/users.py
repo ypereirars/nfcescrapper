@@ -1,8 +1,8 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status
 
-from drivers.rest.dependencies import get_users_services
+from drivers.rest.dependencies import get_users_services, validate_id_input
 from drivers.rest.schemas.users import (
     UserModel,
     UserPatchRequestModel,
@@ -33,19 +33,6 @@ async def get_user(
     id: int,
     service: Annotated[UserService, Depends(get_users_services)],
 ) -> UserModel:
-    try:
-        id = int(id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID do usuário é obrigatório",
-        )
-
-    if id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido."
-        )
-
     user = service.find_by_id(id)
 
     return user
@@ -53,23 +40,10 @@ async def get_user(
 
 @router.patch("/{id}", status_code=status.HTTP_200_OK)
 async def update_user(
-    id: int,
+    id: Annotated[int, Depends(validate_id_input)],
     user: UserPatchRequestModel,
     service: Annotated[UserService, Depends(get_users_services)],
 ) -> None:
-    try:
-        id = int(id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID do usuário é obrigatório",
-        )
-
-    if id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido."
-        )
-
     service.update(id, user)
 
     return user
@@ -86,7 +60,7 @@ async def create_user(
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
-    id: int,
+    id: Annotated[int, Depends(validate_id_input)],
     service: Annotated[UserService, Depends(get_users_services)],
 ) -> None:
     """Delete a user by it's ID
@@ -94,17 +68,5 @@ async def delete_user(
     Args:
         id (int): The user ID
     """
-    try:
-        id = int(id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID do usuário é obrigatório",
-        )
-
-    if id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido."
-        )
 
     service.delete(id)
