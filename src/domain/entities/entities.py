@@ -98,6 +98,9 @@ class Item(Entity):
 
 @dataclass
 class EletronicInvoice(Entity):
+    user_id: int = 0
+    user: User = None
+    company_id: int = 0
     company: Company = None
     items: list[Item] = None
     totals: Totals = None
@@ -108,6 +111,7 @@ class EletronicInvoice(Entity):
     issue_date: str = ""
     authorization_protocol: str = ""
     authorization_date: str = ""
+    created_on: datetime = datetime.now()
 
     @property
     def __dict__(self):
@@ -116,8 +120,17 @@ class EletronicInvoice(Entity):
         company["company_id"] = id
 
         return {
+            "id": self.id,
+            "access_key": self.access_key,
+            "number": self.number,
+            "series": self.series,
+            "issue_date": self.issue_date,
+            "authorization_protocol": self.authorization_protocol,
+            "authorization_date": self.authorization_date,
+            "user": vars(self.user) if self.user else {},
             "company": company,
-            "items": [vars(item) for item in self.items],
-            "totals": vars(self.totals),
-            "taxes": vars(self.taxes),
+            "items": [vars(item) for item in self.items] if self.items else [],
+            "totals": vars(self.totals) if self.totals else {},
+            "taxes": vars(self.taxes) if self.taxes else {},
+            "created_on": self.created_on.strftime("%Y-%m-%d %H:%M:%S"),
         }
