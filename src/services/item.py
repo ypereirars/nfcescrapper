@@ -3,6 +3,7 @@ from domain.entities.entities import Item
 from drivers.rest.schemas.items import ItemModel, ItemPostRequestModel
 from ports.services import Service
 from repositories import ItemRepository
+from services.exceptions import EntityAlreadyExists, EntityNotExists
 
 __all__ = ["ItemService"]
 
@@ -13,17 +14,29 @@ class ItemService(Service):
         self.repository = repository
 
     def save(self, model: ItemPostRequestModel) -> ItemModel:
+        _entity = self.repository.find_all(
+            invoice_id=model.invoice_id, product_id=model.product_id
+        )
+
+        if _entity:
+            raise EntityAlreadyExists("Item")
+
         entity = self.repository.save(Item(**vars(model)))
 
         return ItemModel(**vars(entity))
 
     def delete(self, id: int) -> None:
+        self.find_by_id(id)
+
         self.repository.delete(id)
 
     def find_by_id(self, id: int) -> ItemModel:
         entity = self.repository.find_by_id(id)
 
-        return self.__to_model(entity) if entity else None
+        if entity is None:
+            raise EntityNotExists("Item")
+
+        return self.__to_model(entity)
 
     def find_by_invoice_id(self, invoice_id: int) -> list[ItemModel]:
         entities = self.repository.find_all(invoice_id=invoice_id)
@@ -36,6 +49,7 @@ class ItemService(Service):
         return [self.__to_model(item) for item in entities]
 
     def update(self, id: int, model: ItemModel) -> None:
+        self.find_by_id(id)
         item = Item(
             id=id,
             quantity=model.quantity,

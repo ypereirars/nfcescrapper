@@ -9,7 +9,6 @@ from drivers.rest.schemas.users import (
     UserPostRequestModel,
 )
 from services import UserService
-from services.exceptions import EntityAlreadyExists, EntityNotExists
 
 __all__ = ["router"]
 
@@ -23,12 +22,6 @@ async def get_all_users(
 
     if username:
         user = service.find_by_username(username)
-
-        if user is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Usuário '{username}' não encontrado",
-            )
 
         return user
 
@@ -55,11 +48,6 @@ async def get_user(
 
     user = service.find_by_id(id)
 
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado."
-        )
-
     return user
 
 
@@ -82,13 +70,7 @@ async def update_user(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido."
         )
 
-    try:
-        service.update(id, user)
-    except EntityNotExists as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Não é possível realizar esta operação. '{e.entity}' não existe.",
-        )
+    service.update(id, user)
 
     return user
 
@@ -98,15 +80,8 @@ async def create_user(
     user: UserPostRequestModel,
     service: Annotated[UserService, Depends(get_users_services)],
 ) -> UserModel:
-
-    try:
-        model = service.save(user)
-        return model
-    except EntityAlreadyExists as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Não é possível realizar esta operação. Já existe '{e.entity}' com este 'username'.",
-        )
+    model = service.save(user)
+    return model
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -132,10 +107,4 @@ async def delete_user(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido."
         )
 
-    try:
-        service.delete(id)
-    except EntityNotExists as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Não é possível realizar esta operação. '{e.entity}' não existe.",
-        )
+    service.delete(id)

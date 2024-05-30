@@ -13,42 +13,47 @@ __all__ = ["UserService"]
 
 
 class UserService(Service):
+    __entity_name__ = "Usuário"
 
     def __init__(self, repository: UserRepository):
         self.repository = repository
 
     def save(self, model: UserPostRequestModel) -> UserModel:
+        _entity = self.find_by_username(model.username)
+
+        if _entity:
+            raise EntityAlreadyExists(self.__entity_name__)
+
         user = User(
             first_name=model.first_name,
             last_name=model.last_name,
             username=model.username,
         )
-        _entity = self.find_by_username(user.username)
-
-        if _entity:
-            raise EntityAlreadyExists("Usuário")
 
         entity = self.repository.save(user)
 
-        return UserModel(**vars(entity)) if entity else None
+        return UserModel(**vars(entity))
 
     def delete(self, id: int) -> None:
-        user = self.repository.find_by_id(id)
-
-        if user is None:
-            raise EntityNotExists("Usuário")
+        self.find_by_id(id)
 
         self.repository.delete(id)
 
     def find_by_id(self, id: int) -> UserModel:
         entity = self.repository.find_by_id(id)
 
-        return UserModel(**vars(entity)) if entity else None
+        if entity is None:
+            raise EntityNotExists(self.__entity_name__)
+
+        return UserModel(**vars(entity))
 
     def find_by_username(self, username: str) -> UserModel:
         entity = self.repository.find_all(username=username)
 
-        return UserModel(**vars(entity[0])) if entity else None
+        if entity is None or len(entity) == 0:
+            raise EntityNotExists(self.__entity_name__)
+
+        return UserModel(**vars(entity[0]))
 
     def find_all(self, **filters: dict[str, Any]) -> list[UserModel]:
         entities = self.repository.find_all(**filters)
@@ -56,9 +61,6 @@ class UserService(Service):
         return [UserModel(**vars(entity)) for entity in entities]
 
     def update(self, id: int, model: UserPatchRequestModel) -> None:
-        user = self.repository.find_by_id(id)
-
-        if not user:
-            raise EntityNotExists("Usuário")
+        self.find_by_id(id)
 
         self.repository.update(id, User(**vars(model)))
