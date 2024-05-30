@@ -9,6 +9,7 @@ from drivers.rest.schemas.users import (
     UserPostRequestModel,
 )
 from services import UserService
+from services.exceptions import EntityAlreadyExists, EntityNotExists
 
 __all__ = ["router"]
 
@@ -17,8 +18,20 @@ router = APIRouter(prefix="/users")
 
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_all_users(
-    service: Annotated[UserService, Depends(get_users_services)]
-) -> list[UserModel]:
+    username: str, service: Annotated[UserService, Depends(get_users_services)]
+) -> list[UserModel] | UserModel:
+
+    if username:
+        user = service.find_by_username(username)
+
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Usuário '{username}' não encontrado",
+            )
+
+        return user
+
     return service.find_all()
 
 
@@ -26,7 +39,7 @@ async def get_all_users(
 async def get_user(
     id: int,
     service: Annotated[UserService, Depends(get_users_services)],
-) -> None:
+) -> UserModel:
     try:
         id = int(id)
     except ValueError:
@@ -37,29 +50,14 @@ async def get_user(
 
     if id <= 0:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido."
         )
 
     user = service.find_by_id(id)
 
     if user is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Produto não encontrado"
-        )
-
-    return user
-
-
-@router.get("/{username}", status_code=status.HTTP_200_OK)
-async def get_user_by_username(
-    username: str,
-    service: Annotated[UserService, Depends(get_users_services)],
-) -> None:
-    user = service.find_by_username(username)
-
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Produto não encontrado"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado."
         )
 
     return user
@@ -81,10 +79,16 @@ async def update_user(
 
     if id <= 0:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido."
         )
 
-    service.update(id, user)
+    try:
+        service.update(id, user)
+    except EntityNotExists as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Não é possível realizar esta operação. '{e.entity}' não existe.",
+        )
 
     return user
 
@@ -95,9 +99,14 @@ async def create_user(
     service: Annotated[UserService, Depends(get_users_services)],
 ) -> UserModel:
 
-    model = service.save(user)
-
-    return model
+    try:
+        model = service.save(user)
+        return model
+    except EntityAlreadyExists as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Não é possível realizar esta operação. Já existe '{e.entity}' com este 'username'.",
+        )
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -120,7 +129,13 @@ async def delete_user(
 
     if id <= 0:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="ID do usuário inválido."
         )
 
-    service.delete(id)
+    try:
+        service.delete(id)
+    except EntityNotExists as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Não é possível realizar esta operação. '{e.entity}' não existe.",
+        )
