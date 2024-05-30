@@ -12,3 +12,7 @@ class EntityNotExists(EntityException):
 
 class EntityAlreadyExists(EntityException):
     pass
+
+
+class EntityNotFound(EntityException):
+    pass
