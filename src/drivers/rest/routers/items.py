@@ -43,11 +43,6 @@ async def get_item(
 
     item = service.find_by_id(id)
 
-    if item is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Empresa não encontrada"
-        )
-
     return item
 
 

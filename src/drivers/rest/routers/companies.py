@@ -39,11 +39,6 @@ async def get_company(
 
     company = service.find_by_id(id)
 
-    if company is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Empresa não encontrada"
-        )
-
     return company
 
 
@@ -118,10 +113,5 @@ async def get_company_by_cnpj(
         )
 
     company = service.get_by_cnpj(cnpj=cnpj)
-
-    if company is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Empresa não encontrada"
-        )
 
     return company

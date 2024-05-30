@@ -43,11 +43,6 @@ async def get_invoice(
 
     invoice = service.find_by_id(id)
 
-    if invoice is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Nota fiscal não encontrada"
-        )
-
     return invoice
 
 

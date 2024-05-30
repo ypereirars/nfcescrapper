@@ -38,11 +38,6 @@ async def get_product(
 
     product = service.find_by_id(id)
 
-    if product is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Produto não encontrado"
-        )
-
     return product
 
 
@@ -118,10 +113,5 @@ async def get_product_by_code(
         )
 
     products = service.find_by_code(code=code)
-
-    if products is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Produto não encontrado"
-        )
 
     return products
