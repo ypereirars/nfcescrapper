@@ -21,27 +21,27 @@ services:
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_NAME: ${DATABASE_NAME}
 
-  # telegram_bot:
-  #   build:
-  #     context: .
-  #   restart: always
-  #   expose:
-  #     - 80
-  #   volumes:
-  #     - ./src:/app
-  #   ports:
-  #     - 5002:80
-  #   depends_on:
-  #     - db
-  #   links:
-  #     - db
-  #   command: ["python", "-m", "drivers.bots.telegram"]
-  #   environment:
-  #     TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-  #     POSTGRES_HOST: db
-  #     DATABASE_USERNAME: ${DATABASE_USERNAME}
-  #     DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-  #     DATABASE_NAME: ${DATABASE_NAME}
+  telegram_bot:
+    build:
+      context: .
+    restart: always
+    expose:
+      - 80
+    volumes:
+      - ./src:/app
+    ports:
+      - 5002:80
+    depends_on:
+      - db
+    links:
+      - db
+    command: ["python", "-m", "drivers.bots.telegram"]
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      DATABASE_HOSTNAME: db
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
 
   db:
     image: postgres
