@@ -4,4 +4,5 @@ class TimeoutException(Exception):
         timeout: int = 0,
         message: str = "Timed out waiting {timout}s for page to load",
     ):
+        self.timeout = timeout
         super().__init__(message.format(timout=self.timeout))
