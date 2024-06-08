@@ -7,7 +7,7 @@ from .interfaces import Parser, ContentParser, InfoParser
 __all__ = [
     "AddressParser",
     "CompanyParser",
-    "InformacoesNotaParser",
+    "InvoiceInformationParser",
     "TaxParser",
     "ItemsParser",
     "TotalsParser",
@@ -59,7 +59,7 @@ class CompanyParser(ContentParser):
         return result
 
 
-class InformacoesNotaParser(InfoParser):
+class InvoiceInformationParser(InfoParser):
     CONTENT_SELECTOR = "infos"
 
     def parse(self, page) -> dict:
@@ -188,9 +188,9 @@ class TotalsParser(ContentParser):
 
         return {
             "quantidade_itens": int(values.get("Qtd. total de itens:", 0)),
-            "valor_a_pagar": to_float(values.get("Valor a pagar", 0.0)),
-            "desconto": to_float(values.get("Descontos", 0.0)),
-            "troco": to_float(values.get("Troco", 0.0)),
+            "valor_a_pagar": values.get("Valor a pagar", 0.0),
+            "desconto": values.get("Descontos", 0.0),
+            "troco": values.get("Troco", 0.0),
             "tipo_pagamento": payment_type.upper(),
         }
 
@@ -232,7 +232,7 @@ class NfceParser(Parser):
         self.parsers = {
             "endereco": AddressParser(),
             "empresa": CompanyParser(),
-            "informacoes": InformacoesNotaParser(),
+            "informacoes": InvoiceInformationParser(),
             "tributos": TaxParser(),
             "totais": TotalsParser(),
             "itens": ItemsParser(),
