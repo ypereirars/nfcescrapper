@@ -55,7 +55,7 @@ def to_float(number: str, radix: str = ",", default: float = 0.0) -> float:
 
     try:
 
-        return float(number.replace(radix, "."))
+        return float(number.replace(".", "").replace(radix, "."))
     except Exception:
         return default
 
