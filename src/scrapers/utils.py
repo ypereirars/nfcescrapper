@@ -78,3 +78,39 @@ def remove_consecutive_spaces(text: str | list[str]) -> str:
     text = " ".join(text) if isinstance(text, list) else text
 
     return re.sub(r"[\s\t\n ]+", " ", text).strip()
+
+
+def is_valid_url(value: str) -> bool:
+    """Check if a value is a URL.
+
+    Args:
+        value (str): The value to check.
+
+    Returns:
+        bool: True if the value is a URL, False otherwise.
+    """
+    return _has_access_key(value)
+
+
+def _has_access_key(value: str) -> bool:
+    """Check if a value has a NFC key.
+
+    Args:
+        value (str): The value to check.
+
+    Returns:
+        bool: True if the value has a NFC key, False otherwise.
+    """
+    return re.match(r".*\d{44}.*", value) is not None
+
+
+def is_valid_access_key(value: str) -> bool:
+    """Check if a value is a NFC key.
+
+    Args:
+        value (str): The value to check.
+
+    Returns:
+        bool: True if the value is a NFC key, False otherwise.
+    """
+    return len(value) == 44 and _has_access_key(value)
