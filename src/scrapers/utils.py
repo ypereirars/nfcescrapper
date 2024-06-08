@@ -38,12 +38,19 @@ def clean_text(text: str) -> str:
         return ""
 
 
-def to_float(number: str, radix: str = ",", default: float = 0.0) -> float:
-    """Convert a string to float point number
+def to_float(
+    number: str, radix: str = ",", decimal_separator: str = ".", default: float = 0.0
+) -> float:
+    """Convert a string to floating point number
+
+    First, remove the decimal separator.
+    Then replace the radix separator with a dot.
+    Finally convert the string to a float.
 
     Args:
         number (str): string to be converted
         radix (str, optional): radix point separator. Defaults to ",".
+        decimal_separator (str, optional): decimal separator. Defaults to ".".
         defautl (float, optional): default value to return in case of error. Defaults to 0.0.
 
     Returns:
@@ -55,7 +62,7 @@ def to_float(number: str, radix: str = ",", default: float = 0.0) -> float:
 
     try:
 
-        return float(number.replace(radix, "."))
+        return float(number.replace(decimal_separator, "").replace(radix, "."))
     except Exception:
         return default
 

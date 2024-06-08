@@ -29,6 +29,11 @@ def test_remove_consecutive_spaces(input_text, expected_output):
         ("10,5", 10.5),
         ("10,5 ", 10.5),
         (" 10,5 ", 10.5),
+        ("10.000,00", 10000.0),
+        ("10.000", 10000.0),
+        ("10.000,50", 10000.5),
+        ("10.000,50 ", 10000.5),
+        ("100.000,50 ", 100000.5),
     ],
 )
 def test_to_float_with_comma_radix(input_text, expected_output):
@@ -43,10 +48,11 @@ def test_to_float_with_comma_radix(input_text, expected_output):
         ("10.5", 10.5),
         ("10.5 ", 10.5),
         (" 10.5 ", 10.5),
+        ("10,000.00", 10000.0),
     ],
 )
 def test_to_float_with_dot_radix(input_text, expected_output):
-    assert to_float(input_text, radix=".") == expected_output
+    assert to_float(input_text, radix=".", decimal_separator=",") == expected_output
 
 
 def test_to_float_default_value_when_invalid_string():
