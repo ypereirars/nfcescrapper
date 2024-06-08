@@ -165,7 +165,7 @@ class ItemsParser(ContentParser):
                 continue
 
             items[code] = {
-                "codigo_produto": code,
+                "codigo_produto": code.strip("0"),
                 "descricao_produto": product_description,
                 "quantidade": quantity,
                 "preco_unitario": price,
