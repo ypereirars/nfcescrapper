@@ -9,7 +9,6 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from .exceptions import TimeoutException
 
 __all__ = ["NfceScraper"]
 
@@ -49,7 +48,7 @@ class NfceScraper(Scraper):
             return data
 
         except WebDriverTimeoutException as e:
-            raise TimeoutException(self.timeout) from e
+            raise TimeoutError(f"Timed out after waitging browser to load for {self.timeout}s.") from e
 
         finally:
             self.browser.quit()

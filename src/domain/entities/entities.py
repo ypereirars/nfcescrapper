@@ -48,16 +48,8 @@ class Product(Entity):
         self.description = description
         self.created_on = created_on
 
-    @property
-    def code(self):
-        return self.__code
-
-    @code.setter
-    def code(self, value):
-        self.__code = f"{value:0>13}"
-
     def __str__(self):
-        return f"{self.code:0>13} {self.description}"
+        return f"{self.code} {self.description}"
 
     @property
     def __dict__(self):

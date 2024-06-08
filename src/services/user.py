@@ -19,7 +19,10 @@ class UserService(Service):
         self.repository = repository
 
     def save(self, model: UserPostRequestModel) -> UserModel:
-        _entity = self.find_by_username(model.username)
+        try:
+            _entity = self.find_by_username(model.username)
+        except EntityNotExists:
+            _entity = None
 
         if _entity:
             raise EntityAlreadyExists(self.__entity_name__)

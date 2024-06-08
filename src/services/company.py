@@ -40,7 +40,7 @@ class CompanyService(Service):
     def get_by_cnpj(self, cnpj: str) -> CompanyModel:
         entity = self.repository.find_all(cnpj=cnpj)
 
-        if None is None or len(entity) == 0:
+        if entity is None or len(entity) == 0:
             raise EntityNotExists(self.__entity_name__)
 
         return CompanyModel(**vars(entity[0]))
