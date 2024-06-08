@@ -9,15 +9,15 @@ CREATE TABLE public.usuarios (
 
 CREATE TABLE public.empresas (
 	id bigserial NOT NULL PRIMARY KEY,
-	cnpj varchar(20) NOT NULL,
+	cnpj varchar NOT NULL,
 	razao_social text NOT NULL,
 	logradouro text NULL,
 	numero text NULL,
 	complemento text NULL,
 	bairro text NULL,
 	municipio text NULL,
-	uf varchar(2) NULL,
-	cep varchar(10) NULL,
+	uf varchar NULL,
+	cep varchar NULL,
 	CONSTRAINT empresas_unique UNIQUE (cnpj),
 	data_criacao timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
