@@ -23,16 +23,24 @@ class CompanyRepository(Repository):
             created_on=entity.created_on,
         )
 
-        self.session.add(company)
-        self.session.commit()
-        self.session.refresh(company)
+        try:
+            self.session.add(company)
+            self.session.commit()
+            self.session.refresh(company)
 
-        return CompanyRepository.__to_entity(company)
+            return CompanyRepository.__to_entity(company)
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     def delete(self, id: int) -> None:
-        self.session.query(CompanySchema).filter_by(id=id).delete()
-        self.session.commit()
-        self.session.flush()
+        try:
+            self.session.query(CompanySchema).filter_by(id=id).delete()
+            self.session.commit()
+            self.session.flush()
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     def find_by_id(self, id: int) -> Company:
         company = self.session.query(CompanySchema).get(id)
@@ -62,8 +70,12 @@ class CompanyRepository(Repository):
             zip_code=company.address.zip_code,
             created_on=company.created_on,
         )
-        self.session.merge(company)
-        self.session.commit()
+        try:
+            self.session.merge(company)
+            self.session.commit()
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     @staticmethod
     def __to_entity(company: CompanySchema):

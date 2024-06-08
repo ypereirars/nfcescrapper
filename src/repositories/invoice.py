@@ -27,18 +27,24 @@ class InvoiceRepository(Repository):
             city_tax=entity.taxes.municipal,
             source=entity.taxes.source,
         )
+        try:
+            self.session.add(invoice)
+            self.session.commit()
+            self.session.refresh(invoice)
 
-        self.session.add(invoice)
-        self.session.commit()
-        self.session.refresh(invoice)
-
-        return InvoiceRepository.__to_entity(invoice)
+            return InvoiceRepository.__to_entity(invoice)
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     def delete(self, id: int) -> None:
-        invoice = self.session.query(InvoiceSchema).filter_by(id=id).first()
-        self.session.delete(invoice)
-        self.session.commit()
-        self.session.flush()
+        try:
+            self.session.query(InvoiceSchema).filter_by(id=id).delete()
+            self.session.commit()
+            self.session.flush()
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     def find_by_id(self, id: int) -> EletronicInvoice:
         invoice = self.session.query(InvoiceSchema).filter_by(id=id).first()
@@ -62,8 +68,12 @@ class InvoiceRepository(Repository):
             city_tax=entity.taxes.municipal,
             source=entity.taxes.source,
         )
-        self.session.merge(invoice)
-        self.session.commit()
+        try:
+            self.session.merge(invoice)
+            self.session.commit()
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     @staticmethod
     def __to_entity(invoice: InvoiceSchema) -> EletronicInvoice:

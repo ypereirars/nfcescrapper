@@ -12,18 +12,26 @@ class ProductRepository(Repository):
     def save(self, entity: Product) -> Product:
         product = ProductSchema(code=entity.code, description=entity.description)
 
-        self.session.add(product)
-        self.session.commit()
-        self.session.refresh(product)
+        try:
+            self.session.add(product)
+            self.session.commit()
+            self.session.refresh(product)
 
-        return Product(
-            id=product.id, code=product.code, description=product.description
-        )
+            return Product(
+                id=product.id, code=product.code, description=product.description
+            )
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     def delete(self, id: int) -> None:
-        self.session.query(ProductSchema).filter_by(id=id).delete()
-        self.session.commit()
-        self.session.flush()
+        try:
+            self.session.query(ProductSchema).filter_by(id=id).delete()
+            self.session.commit()
+            self.session.flush()
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     def find_by_id(self, id: int) -> Product:
         product = self.session.query(ProductSchema).get(id)
@@ -39,9 +47,15 @@ class ProductRepository(Repository):
         )
 
     def update(self, id: int, entity: Product) -> None:
-        product = ProductSchema(id=id, code=entity.code, description=entity.description)
-        self.session.merge(product)
-        self.session.commit()
+        try:
+            product = ProductSchema(
+                id=id, code=entity.code, description=entity.description
+            )
+            self.session.merge(product)
+            self.session.commit()
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     @staticmethod
     def __to_entity(product: ProductSchema) -> Product:

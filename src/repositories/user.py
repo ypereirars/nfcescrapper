@@ -29,9 +29,13 @@ class UserRepository(Repository):
         )
 
     def delete(self, id: int) -> None:
-        self.session.query(UserSchema).filter_by(id=id).delete()
-        self.session.commit()
-        self.session.flush()
+        try:
+            self.session.query(UserSchema).filter_by(id=id).delete()
+            self.session.commit()
+            self.session.flush()
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     def find_by_id(self, id: int) -> User:
         user = self.session.query(UserSchema).get(id)
@@ -41,6 +45,10 @@ class UserRepository(Repository):
         users = self.session.query(UserSchema).filter_by(**filters).all()
 
         return [UserRepository.__to_entity(user) for user in users] if users else []
+
+    def find_by_username(self, username: str) -> User:
+        user = self.session.query(UserSchema).filter_by(username=username).first()
+        return self.__to_entity(user) if user else None
 
     def update(self, id: int, entity: User) -> None:
         user = UserSchema(

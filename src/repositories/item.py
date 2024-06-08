@@ -18,15 +18,25 @@ class ItemRepository(Repository):
             unity_of_measurement=entity.unity_of_measurement,
         )
 
-        self.session.add(invoice)
-        self.session.commit()
-        self.session.refresh(invoice)
-        
-        return invoice
+        try:
+            self.session.add(invoice)
+            self.session.commit()
+            self.session.refresh(invoice)
+
+            return ItemRepository.__to_entity(invoice)
+
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     def delete(self, id: int) -> None:
-        self.session.query(ItemSchema).filter_by(id=id).delete()
-        self.session.commit()
+        try:
+            self.session.query(ItemSchema).filter_by(id=id).delete()
+            self.session.commit()
+            self.session.flush()
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     def find_by_id(self, id: int) -> Item:
         item = self.session.query(ItemSchema).filter_by(id=id).first()
@@ -43,8 +53,12 @@ class ItemRepository(Repository):
             unit_price=entity.unit_price,
             unity_of_measurement=entity.unity_of_measurement,
         )
-        self.session.merge(item)
-        self.session.commit()
+        try:
+            self.session.merge(item)
+            self.session.commit()
+        except Exception as ex:
+            self.session.rollback()
+            raise ex
 
     @staticmethod
     def __to_entity(item: Any) -> Item:
