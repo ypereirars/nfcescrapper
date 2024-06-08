@@ -1,66 +1,48 @@
 from typing import Any
-from database import PostgresDatabase
+from database.schema import ItemSchema
 from domain import Item, Product
 from ports.repositories import Repository
+from sqlalchemy.orm import Session
 
 
 class ItemRepository(Repository):
-    def __init__(self, client: PostgresDatabase):
-        self.client = client
+    def __init__(self, session: Session):
+        self.session = session
 
     def save(self, entity: Item) -> Item:
-        with self.client as session:
-            try:
-                invoice = self.client.Item(
-                    product_id=entity.product_id,
-                    invoice_id=entity.invoice_id,
-                    quantity=entity.quantity,
-                    unit_price=entity.unit_price,
-                    unity_of_measurement=entity.unity_of_measurement,
-                )
+        invoice = ItemSchema(
+            product_id=entity.product_id,
+            invoice_id=entity.invoice_id,
+            quantity=entity.quantity,
+            unit_price=entity.unit_price,
+            unity_of_measurement=entity.unity_of_measurement,
+        )
 
-                session.add(invoice)
-                session.commit()
-
-                return ItemRepository.__to_entity(invoice)
-            except Exception as e:
-                session.rollback()
-                raise e
+        self.session.add(invoice)
+        self.session.commit()
+        self.session.refresh(invoice)
 
     def delete(self, id: int) -> None:
-        with self.client as session:
-            try:
-                invoice = session.query(self.client.Item).filter_by(id=id).first()
-                session.delete(invoice)
-                session.commit()
-            except Exception as e:
-                session.rollback()
-                raise e
+        self.session.query(ItemSchema).filter_by(id=id).delete()
+        self.session.commit()
 
     def find_by_id(self, id: int) -> Item:
-        with self.client as session:
-            item = session.query(self.client.Item).filter_by(id=id).first()
-            return ItemRepository.__to_entity(item) if item else None
+        item = self.session.query(ItemSchema).filter_by(id=id).first()
+        return ItemRepository.__to_entity(item) if item else None
 
     def find_all(self, **filters: dict[str, Any]) -> list[Item]:
-        with self.client as session:
-            items = session.query(self.client.Item).filter_by(**filters).all()
-            return [ItemRepository.__to_entity(item) for item in items]
+        items = self.session.query(ItemSchema).filter_by(**filters).all()
+        return [ItemRepository.__to_entity(item) for item in items]
 
-    def update(self, entity: Item) -> None:
-        with self.client as session:
-            try:
-                item = session.query(self.client.Item).filter_by(id=entity.id).first()
-                item.product_id = entity.product_id
-                item.invoice_id = entity.invoice_id
-                item.quantity = entity.quantity
-                item.unit_price = entity.unit_price
-                item.unity_of_measurement = entity.unity_of_measurement
-
-                session.commit()
-            except Exception as e:
-                session.rollback()
-                raise e
+    def update(self, id: int, entity: Item) -> None:
+        item = ItemSchema(
+            id=id,
+            quantity=entity.quantity,
+            unit_price=entity.unit_price,
+            unity_of_measurement=entity.unity_of_measurement,
+        )
+        self.session.merge(item)
+        self.session.commit()
 
     @staticmethod
     def __to_entity(item: Any) -> Item:

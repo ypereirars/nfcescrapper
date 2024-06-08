@@ -3,6 +3,7 @@ asyncio==3.4.3
 beautifulsoup4==4.12.3
 fastapi==0.111.0
 pydantic==2.7.1
+pydantic-settings==2.2.1
 python-dotenv==1.0.1
 selenium==4.19.0
 SQLAlchemy==2.0.29

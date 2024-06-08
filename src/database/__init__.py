@@ -1,3 +1,17 @@
-from .schema import PostgresDatabase, Base
+from .schema import (
+    Schema,
+    UserSchema,
+    ProductSchema,
+    CompanySchema,
+    InvoiceSchema,
+    ItemSchema,
+)
 
-__all__ = ["PostgresDatabase", "Base"]
+__all__ = [
+    "Schema",
+    "UserSchema",
+    "ProductSchema",
+    "CompanySchema",
+    "InvoiceSchema",
+    "ItemSchema",
+]

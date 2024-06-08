@@ -1,4 +1,4 @@
-from domain import Taxes
+from src.domain import Taxes
 
 
 def test_sum_total_taxes():

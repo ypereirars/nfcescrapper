@@ -1,20 +1,20 @@
-from functools import lru_cache
 from typing import Annotated
-from fastapi import Depends
-import os
-
-from database.schema import PostgresDatabase
+from fastapi import Depends, status, HTTPException
+from settings.database import get_db_connection
+from sqlalchemy.orm import Session
 from repositories import (
     CompanyRepository,
     ItemRepository,
     ProductRepository,
     InvoiceRepository,
+    UserRepository,
 )
 from services import (
     CompanyService,
     ItemService,
     ProductService,
     InvoiceService,
+    UserService,
 )
 from ports.services import Service
 
@@ -24,56 +24,50 @@ load_dotenv()
 
 
 __all__ = [
-    "get_postgres_client",
     "get_products_repository",
     "get_companies_repository",
     "get_invoices_repository",
     "get_items_repository",
+    "get_users_repository",
     "get_products_services",
     "get_companies_services",
     "get_invoices_services",
     "get_items_services",
+    "get_users_services",
 ]
-
-
-@lru_cache
-def get_postgres_client() -> PostgresDatabase:
-    database = os.getenv("POSTGRES_DB")
-    user = os.getenv("POSTGRES_USER")
-    password = os.getenv("POSTGRES_PASSWORD")
-    host = os.getenv("POSTGRES_HOST")
-
-    if all([database, user, password, host]):
-        return PostgresDatabase(database, user, password, host=host)
-
-    raise ValueError("Missing environment variables for Postgres connection")
 
 
 # Repositories
 
 
 def get_products_repository(
-    postgres_client: PostgresDatabase = Depends(get_postgres_client),
-) -> PostgresDatabase:
+    postgres_client: Session = Depends(get_db_connection),
+) -> Session:
     return ProductRepository(postgres_client)
 
 
 def get_companies_repository(
-    postgres_client: PostgresDatabase = Depends(get_postgres_client),
-) -> PostgresDatabase:
+    postgres_client: Session = Depends(get_db_connection),
+) -> Session:
     return CompanyRepository(postgres_client)
 
 
 def get_invoices_repository(
-    postgres_client: PostgresDatabase = Depends(get_postgres_client),
-) -> PostgresDatabase:
+    postgres_client: Session = Depends(get_db_connection),
+) -> Session:
     return InvoiceRepository(postgres_client)
 
 
 def get_items_repository(
-    postgres_client: PostgresDatabase = Depends(get_postgres_client),
-) -> PostgresDatabase:
+    postgres_client: Session = Depends(get_db_connection),
+) -> Session:
     return ItemRepository(postgres_client)
+
+
+def get_users_repository(
+    postgres_client: Session = Depends(get_db_connection),
+) -> Session:
+    return UserRepository(postgres_client)
 
 
 # Services
@@ -101,3 +95,19 @@ def get_items_services(
     repository: Annotated[ItemRepository, Depends(get_items_repository)],
 ) -> Service:
     return ItemService(repository)
+
+
+def get_users_services(
+    repository: Annotated[UserRepository, Depends(get_users_repository)],
+) -> Service:
+    return UserService(repository)
+
+
+def validate_id_input(id: int):
+    if not isinstance(id, int) or int(id) <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="O ID deve ser um número maior que zero.",
+        )
+
+    return int(id)

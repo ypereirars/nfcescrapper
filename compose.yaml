@@ -16,32 +16,32 @@ services:
       - db
     command: ["uvicorn", "drivers.rest.main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
     environment:
-      POSTGRES_HOST: db
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      DATABASE_HOSTNAME: db
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
 
-  telegram_bot:
-    build:
-      context: .
-    restart: always
-    expose:
-      - 80
-    volumes:
-      - ./src:/app
-    ports:
-      - 5002:80
-    depends_on:
-      - db
-    links:
-      - db
-    command: ["python", "-m", "drivers.bots.telegram"]
-    environment:
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-      POSTGRES_HOST: db
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+  # telegram_bot:
+  #   build:
+  #     context: .
+  #   restart: always
+  #   expose:
+  #     - 80
+  #   volumes:
+  #     - ./src:/app
+  #   ports:
+  #     - 5002:80
+  #   depends_on:
+  #     - db
+  #   links:
+  #     - db
+  #   command: ["python", "-m", "drivers.bots.telegram"]
+  #   environment:
+  #     TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+  #     POSTGRES_HOST: db
+  #     DATABASE_USERNAME: ${DATABASE_USERNAME}
+  #     DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+  #     DATABASE_NAME: ${DATABASE_NAME}
 
   db:
     image: postgres
@@ -54,9 +54,9 @@ services:
     volumes:
       - database_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
 
 volumes:
   database_data:

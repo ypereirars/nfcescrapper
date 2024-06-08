@@ -20,5 +20,5 @@ class Service(ABC):
     def find_all(self, **filters: dict[str, Any]) -> list[BaseModel]:
         pass
 
-    def update(self, model: BaseModel) -> None:
+    def update(self, id: int, model: BaseModel) -> None:
         pass

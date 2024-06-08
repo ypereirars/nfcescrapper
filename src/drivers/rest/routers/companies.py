@@ -2,9 +2,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from drivers.rest.dependencies import get_companies_services
+from drivers.rest.dependencies import get_companies_services, validate_id_input
 from services import CompanyService
-from .schema import CompanyModel
+from ..schemas.companies import CompanyModel, CompanyPatchRequestModel
 
 __all__ = ["router"]
 
@@ -19,92 +19,48 @@ async def get_all_companies(
     return service.find_all()
 
 
-@router.get("/{company_id}", status_code=status.HTTP_200_OK)
+@router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_company(
-    company_id: int,
+    id: Annotated[int, Depends(validate_id_input)],
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> None:
-    try:
-        company_id = int(company_id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID da empresa é obrigatório",
-        )
 
-    if company_id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID da empresa inválido"
-        )
-
-    company = service.find_by_id(company_id)
-
-    if company is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Empresa não encontrada"
-        )
+    company = service.find_by_id(id)
 
     return company
 
 
-@router.patch("/{company_id}", status_code=status.HTTP_200_OK)
+@router.patch("/{id}", status_code=status.HTTP_200_OK)
 async def update_company(
-    company_id: int,
-    company: CompanyModel,
+    id: Annotated[int, Depends(validate_id_input)],
+    company: CompanyPatchRequestModel,
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> None:
-    try:
-        company_id = int(company_id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID da empresa é obrigatório",
-        )
 
-    if company_id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID da empresa inválido"
-        )
-
-    service.update(company)
-
-    return company
+    service.update(id, company)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_company(
-    company: CompanyModel,
+    company: CompanyPatchRequestModel,
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> CompanyModel:
-    entity = service.save(company)
+    model = service.save(company)
 
-    return CompanyModel.from_entity(entity)
+    return model
 
 
-@router.delete("/{company_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_company(
-    company_id: int,
+    id: Annotated[int, Depends(validate_id_input)],
     service: Annotated[CompanyService, Depends(get_companies_services)],
 ) -> None:
     """Delete a company by it's ID
 
     Args:
-        company_id (int): The company ID
+        id (int): The company ID
     """
-    try:
-        company_id = int(company_id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID da empresa é obrigatório",
-        )
-
-    if company_id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="ID da empresa inválido"
-        )
-
-    service.delete(company_id)
+    service.delete(id)
 
 
 @router.get("/cnpj/{cnpj}", status_code=status.HTTP_200_OK)
@@ -119,11 +75,6 @@ async def get_company_by_cnpj(
             detail="CNPJ da empresa é obrigatório",
         )
 
-    company = service.find_all(cnpj=cnpj)
-
-    if company is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Empresa não encontrada"
-        )
+    company = service.get_by_cnpj(cnpj=cnpj)
 
     return company
