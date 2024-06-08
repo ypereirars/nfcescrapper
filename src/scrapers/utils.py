@@ -61,7 +61,6 @@ def to_float(
         return default
 
     try:
-
         return float(number.replace(decimal_separator, "").replace(radix, "."))
     except Exception:
         return default
