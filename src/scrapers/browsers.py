@@ -17,7 +17,7 @@ def get_browser() -> Firefox:
     options = Options()
     options.add_argument("--headless")
 
-    WEBDRIVER_PATH = os.environ.get("WEBDRIVER_PATH")
+    WEBDRIVER_PATH = os.environ.get("WEBDRIVER_PATH", "")
 
     if not os.path.exists(WEBDRIVER_PATH):
         WEBDRIVER_PATH = GeckoDriverManager().install()
