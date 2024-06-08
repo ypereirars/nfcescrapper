@@ -1,6 +1,6 @@
 from typing import Any
 from domain.entities.entities import Product
-from drivers.rest.schemas.products import ProductModel
+from drivers.rest.schemas.products import ProductModel, ProductPatchRequestModel
 from ports.services import Service
 from repositories import ProductRepository
 from services.exceptions import EntityAlreadyExists, EntityNotExists
@@ -13,7 +13,7 @@ class ProductService(Service):
     def __init__(self, repository: ProductRepository):
         self.repository = repository
 
-    def save(self, model: ProductModel) -> ProductModel:
+    def save(self, model: ProductPatchRequestModel) -> ProductModel:
         products = self.repository.find_all(
             code=model.code, description=model.description
         )

@@ -23,7 +23,7 @@ class ItemService(Service):
 
         entity = self.repository.save(Item(**vars(model)))
 
-        return ItemModel(**vars(entity))
+        return self.__to_model(entity)
 
     def delete(self, id: int) -> None:
         self.find_by_id(id)
