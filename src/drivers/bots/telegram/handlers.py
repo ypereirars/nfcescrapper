@@ -9,19 +9,28 @@ from .utils import get_user_from
 
 __all__ = ["telegram_bot"]
 
+HELP_MESSAGE = (
+    "Para usar o bot, me envie a URL de uma NFC-e que eu salvo para você.\n\n"
+    + "Comandos disponíveis:\n"
+    + "  - /comecar - Exibe a mensagem inicial do bot.\n\n"
+    + "  - /ajuda - Exibe esta mensagem de ajuda.\n\n"
+    + "  - /nfce <url> - Salva a NFC-e com a URL informada.\n\n"
+    + "  - /nfce <chave> - Salva a NFC-e com a chave de acesso informada.\n\n"
+)
 
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 telegram_bot = TeleBot(TELEGRAM_BOT_TOKEN)
 logger.setLevel(logging.INFO)
 
 
-@telegram_bot.message_handler(commands=["comecar"])
+@telegram_bot.message_handler(commands=["comecar", "start"])
 def start_handler(message: Message):
     user = get_user_from(message)
     response_message = (
         f"Oi, *{user}*.\n"
         + "Eu sou o bot (não oficial) da NFC-e!\n"
-        + "Me envie a URL de uma NFC-e que eu salvo para você."
+        + "Me envie a URL de uma NFC-e que eu salvo para você.\n\n"
+        + HELP_MESSAGE
     )
 
     logger.info("Saving user '%s'.", user)
@@ -36,15 +45,7 @@ def start_handler(message: Message):
 
 @telegram_bot.message_handler(commands=["ajuda"])
 def help_handler(message: Message):
-    help_message = (
-        "Para usar o bot, me envie a URL de uma NFC-e que eu salvo para você.\n\n"
-        + "Comandos disponíveis:\n"
-        + "  - /comecar - Exibe a mensagem inicial do bot.\n\n"
-        + "  - /ajuda - Exibe esta mensagem de ajuda.\n\n"
-        + "  - /nfce <url> - Salva a NFC-e com a URL informada.\n\n"
-        + "  - /nfce <chave> - Salva a NFC-e com a chave de acesso informada.\n\n"
-    )
-    telegram_bot.reply_to(message, help_message)
+    telegram_bot.reply_to(message, HELP_MESSAGE)
 
 
 @telegram_bot.message_handler(commands=["nfce"])
