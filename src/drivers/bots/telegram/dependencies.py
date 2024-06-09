@@ -3,53 +3,48 @@ from repositories.company import CompanyRepository
 from repositories.invoice import InvoiceRepository
 from repositories.item import ItemRepository
 from repositories.product import ProductRepository
-from services.company import CompanyService
-from services.invoice import InvoiceService
-from services.item import ItemService
-from services.product import ProductService
-from services.user import UserService
 from settings.database import get_db_connection
 from functools import lru_cache
 
 __all__ = [
-    "get_user_service",
-    "get_company_service",
-    "get_product_service",
-    "get_invoice_service",
-    "get_items_services",
+    "get_user_repository",
+    "get_company_repository",
+    "get_product_repository",
+    "get_invoice_repository",
+    "get_items_repository",
 ]
 
 
 @lru_cache
-def get_user_service() -> UserService:
+def get_user_repository() -> UserRepository:
     database = next(get_db_connection())
 
-    return UserService(UserRepository(database))
+    return UserRepository(database)
 
 
 @lru_cache
-def get_company_service() -> CompanyService:
+def get_company_repository() -> CompanyRepository:
     database = next(get_db_connection())
 
-    return CompanyService(CompanyRepository(database))
+    return CompanyRepository(database)
 
 
 @lru_cache
-def get_product_service() -> ProductService:
+def get_product_repository() -> ProductRepository:
     database = next(get_db_connection())
 
-    return ProductService(ProductRepository(database))
+    return ProductRepository(database)
 
 
 @lru_cache
-def get_invoice_service() -> InvoiceService:
+def get_invoice_repository() -> InvoiceRepository:
     database = next(get_db_connection())
 
-    return InvoiceService(InvoiceRepository(database))
+    return InvoiceRepository(database)
 
 
 @lru_cache
-def get_items_services() -> ItemService:
+def get_items_repository() -> ItemRepository:
     database = next(get_db_connection())
 
-    return ItemService(ItemRepository(database))
+    return ItemRepository(database)
