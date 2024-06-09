@@ -47,6 +47,11 @@ class CompanyRepository(Repository):
 
         return CompanyRepository.__to_entity(company) if company else None
 
+    def find_by_cnpj(self, cnpj: str) -> Company:
+        company = self.session.query(CompanySchema).filter_by(cnpj=cnpj).first()
+
+        return CompanyRepository.__to_entity(company) if company else None
+
     def find_all(self, **filters) -> list[Company]:
         companies = self.session.query(CompanySchema).filter_by(**filters).all()
 
