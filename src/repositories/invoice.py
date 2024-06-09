@@ -14,8 +14,8 @@ class InvoiceRepository(Repository):
         # TODO: If the invoice already exists, raise exception
 
         invoice = InvoiceSchema(
-            user_id=entity.user.id,
-            company_id=entity.company.id,
+            user_id=entity.user_id, 
+            company_id=entity.company_id,
             access_key=entity.access_key,
             number=entity.number,
             series=entity.series,
@@ -26,6 +26,13 @@ class InvoiceRepository(Repository):
             state_tax=entity.taxes.state,
             city_tax=entity.taxes.municipal,
             source=entity.taxes.source,
+            payment_type=entity.totals.payment_type,
+            discounts=entity.totals.discounts,
+            exchange=entity.totals.exchange,
+            total_before_discount=entity.totals.total_before_discount,
+            total_after_discount=entity.totals.total_after_discount,
+            total_items=entity.totals.total_items,
+            
         )
         try:
             self.session.add(invoice)

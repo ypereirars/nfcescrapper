@@ -1,8 +1,8 @@
 CREATE TABLE public.usuarios (
 	id bigserial NOT NULL PRIMARY KEY,
 	primeiro_nome varchar(100) NOT NULL,
-	ultimo_nome varchar(100) NOT NULL,
-	nome_usuario varchar(100) NOT NULL,
+	ultimo_nome varchar(100) NULL,
+	nome_usuario varchar(100) NULL,
 	data_criacao timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -45,7 +45,14 @@ CREATE TABLE public.notas_fiscais (
 	tributacao_estadual decimal NOT NULL DEFAULT 0.0,
 	tributacao_municipal decimal NOT NULL DEFAULT 0.0,
 	fonte varchar DEFAULT NULL,
-	data_criacao timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+	data_criacao timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	tipo_pagamento varchar default '',
+	desconto decimal default 0.0,
+	troco decimal default 0.0,
+	valor_a_pagar decimal default 0.0,
+	valor_total decimal default 0.0,
+	impostos decimal default 0.0,
+	quantidade_itens decimal default 0.0
 );
 
 
