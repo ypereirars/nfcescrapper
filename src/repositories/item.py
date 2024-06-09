@@ -10,7 +10,7 @@ class ItemRepository(Repository):
         self.session = session
 
     def save(self, entity: Item) -> Item:
-        invoice = ItemSchema(
+        item = ItemSchema(
             product_id=entity.product_id,
             invoice_id=entity.invoice_id,
             quantity=entity.quantity,
@@ -19,11 +19,11 @@ class ItemRepository(Repository):
         )
 
         try:
-            self.session.add(invoice)
+            self.session.add(item)
             self.session.commit()
-            self.session.refresh(invoice)
+            self.session.refresh(item)
 
-            return ItemRepository.__to_entity(invoice)
+            return ItemRepository.__to_entity(item)
 
         except Exception as ex:
             self.session.rollback()
